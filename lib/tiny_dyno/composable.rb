@@ -12,9 +12,10 @@ module TinyDyno
 
     # All modules that a +Document+ is composed of are defined in this
     # module, to keep the document class from getting too cluttered.
-    included do
-      extend Findable
-    end
+    # TODO re enable
+    # included do
+      # extend Findable
+    # end
 
     include ActiveModel::Model
     include ActiveModel::ForbiddenAttributesProtection

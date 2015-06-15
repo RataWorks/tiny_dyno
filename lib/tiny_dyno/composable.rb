@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'tiny_dyno/changeable'
+require 'tiny_dyno/interceptable'
 require 'tiny_dyno/persistable'
 require 'tiny_dyno/stateful'
 
@@ -30,12 +31,13 @@ module TinyDyno
     include Persistable
     include Stateful
     include Threaded::Lifecycle
-
+    include Interceptable
 
     MODULES = [
       Attributes,
       Changeable,
       Fields,
+      Interceptable,
       Persistable,
       Stateful,
       Threaded::Lifecycle,

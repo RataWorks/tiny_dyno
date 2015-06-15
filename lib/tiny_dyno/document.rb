@@ -1,13 +1,5 @@
-# encoding: utf-8
-# require "tiny_dyno/contextual" # priority: 2, criteria needs this
-# require "tiny_dyno/copyable"   # priority: 3
-# require "tiny_dyno/equality"   # priority: 3
-# require "tiny_dyno/criteria"   # priority: 2
-# require "tiny_dyno/timestamps" # priority: 3,4
-
+require 'tiny_dyno/threaded'
 require 'tiny_dyno/attributes'
-# require 'tiny_dyno/interceptable'
-# require 'tiny_dyno/factory'
 require 'tiny_dyno/fields'
 require 'tiny_dyno/composable' # I like the idea, but need to implement this differently to fit DynamoDB
 
@@ -105,7 +97,7 @@ module TinyDyno
       end
       # TODO figure out how to enable callbacks
       # callbacks.
-      # run_callbacks(:initialize) unless _initialize_callbacks.empty?
+      run_callbacks(:initialize) unless _initialize_callbacks.empty?
     end
 
     # Return the model name of the document.

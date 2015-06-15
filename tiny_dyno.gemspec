@@ -36,5 +36,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'aws-sdk', '~> 2'
   spec.add_dependency 'activemodel', '~> 4.2'
+  spec.add_dependency 'origin', '~> 2.1'
 
 end

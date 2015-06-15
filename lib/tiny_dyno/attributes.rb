@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'active_model/attribute_methods'
-require 'tiny_dyno/attributes/dynamic'
-require 'tiny_dyno/attributes/nested'
+# require 'tiny_dyno/attributes/dynamic'
+# require 'tiny_dyno/attributes/nested'
 require 'tiny_dyno/attributes/processing'
 require 'tiny_dyno/attributes/readonly'
 
@@ -170,19 +170,12 @@ module TinyDyno
       if attribute_writable?(access)
         _assigning do
           validate_attribute_value(access, value)
-          localized = fields[access].try(:localized?)
           attributes_before_type_cast[name.to_s] = value
           typed_value = typed_value_for(access, value)
-          binding.pry if name == 'first_name'
           unless attributes[access] == typed_value || attribute_changed?(access)
             attribute_will_change!(access)
           end
-          if localized
-            (attributes[access] ||= {}).merge!(typed_value)
-          else
-            attributes[access] = typed_value
-          end
-          binding.pry
+          attributes[access] = typed_value
           typed_value
         end
       end
@@ -222,9 +215,7 @@ module TinyDyno
     #
     # @since 2.2.1
     def assign_attributes(attrs = nil)
-      _assigning do
-        process_attributes(attrs)
-      end
+      _assigning { process_attributes(attrs) }
     end
 
     # Writes the supplied attributes hash to the document. This will only

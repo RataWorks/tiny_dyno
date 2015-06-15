@@ -63,7 +63,7 @@ module TinyDyno
       configuration = settings
       self.options = configuration[:options]
     end
-    # Register a model in the application with Mongoid.
+    # Register a model in the application with TinyDyno.
     #
     # @example Register a model.
     #   config.register_model(Band)
@@ -74,7 +74,7 @@ module TinyDyno
     end
 
     # Get all the models in the application - this is everything that includes
-    # Mongoid::Document.
+    # TinyDyno::Document.
     #
     # @example Get all the models.
     #   config.models

@@ -181,7 +181,6 @@ module TinyDyno
     #
     # @since 2.1.6
     def attribute_changed?(attr)
-      binding.pry if attr == 'first_name'
       attr = database_field_name(attr)
       return false unless changed_attributes.key?(attr)
       changed_attributes[attr] != attributes[attr]
@@ -227,7 +226,9 @@ module TinyDyno
     #
     # @since 2.3.0
     def attribute_will_change!(attr)
+      p "invoked attribute_will_change! with attr: #{ attr }"
       unless changed_attributes.key?(attr)
+        p "debugging read_attr: #{ read_attribute(attr) }"
         changed_attributes[attr] = read_attribute(attr).__deep_copy__
       end
     end

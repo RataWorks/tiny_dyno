@@ -14,17 +14,19 @@ module TinyDyno
     # and using language as used out in the DynamoDB API
     #
     # http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
+    # TODO
+    # if commented out, no idea on an equivalent ruby object class right now
     TYPE_MAPPINGS = {
-        binary_blob: 'B',
-        bool: 'BOOL',
-        binary_set: 'BS',
-        list: 'L',
-        map: 'M',
-        number: 'N',
-        number_set: 'NS',
-        null: 'NULL',
-        string: 'S',
-        string_set: 'SS'
+        # binary_blob: 'B',
+        # bool: 'BOOL',
+        binary_set: Array,
+        list: Array,
+        map: Hash,
+        number: Integer,
+        number_set: Array,
+        # null: 'NULL',
+        string: String,
+        string_set: Array
     }
 
     # Constant for all names of the id field in a document.

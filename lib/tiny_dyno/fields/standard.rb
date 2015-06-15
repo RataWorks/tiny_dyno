@@ -8,26 +8,9 @@ module TinyDyno
       attr_accessor :default_val, :label, :name, :options
 
       p "caller: #{ caller[0] }"
-      delegate :from_dyno_type, :to_dyno_type, to: :type
+      delegate :from_dyno_type, :evolve, :to_dyno_type, to: :type
 
       # insist on correct typing by the model creator
-
-      # Adds the atomic changes for this type of resizable field.
-      #
-      # @example Add the atomic changes.
-      # field.add_atomic_changes(doc, "key", {}, [], [])
-      #
-      # @param [ Document ] document The document to add to.
-      # @param [ String ] name The name of the field.
-      # @param [ String ] key The atomic location of the field.
-      # @param [ Hash ] mods The current modifications.
-      # @param [ Array ] new The new elements to add.
-      # @param [ Array ] old The old elements getting removed.
-      #
-      # @since 2.4.0
-      def add_atomic_changes(document, name, key, mods, new, old)
-        mods[key] = new
-      end
 
       # Get the constraint from the metadata once.
       #

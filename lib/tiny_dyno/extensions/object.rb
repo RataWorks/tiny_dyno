@@ -133,6 +133,7 @@ module TinyDyno
       #
       # @since 3.0.0
       def to_dyno_type(object)
+        p "caller: #{ caller[0]}"
         self
       end
 
@@ -249,6 +250,7 @@ module TinyDyno
         def to_dyno_type(object)
           object.from_dyno_type
         end
+        def __deep_copy__; self; end
       end
     end
   end

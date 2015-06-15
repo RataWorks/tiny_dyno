@@ -15,7 +15,7 @@ require 'tiny_dyno/extensions/module'
 # require "tiny_dyno/extensions/range"
 # require "tiny_dyno/extensions/regexp"
 # require "tiny_dyno/extensions/set"
-# require "tiny_dyno/extensions/string"
+require 'tiny_dyno/extensions/string'
 # require "tiny_dyno/extensions/symbol"
 # require "tiny_dyno/extensions/time"
 # require "tiny_dyno/extensions/time_with_zone"

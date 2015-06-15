@@ -1,9 +1,8 @@
 # encoding: utf-8
-require "active_model/attribute_methods"
-require "tiny_dyno/attributes/dynamic"
-require "tiny_dyno/attributes/nested"
-require "tiny_dyno/attributes/processing"
-require "tiny_dyno/attributes/readonly"
+require 'active_model/attribute_methods'
+require 'tiny_dyno/attributes/dynamic'
+require 'tiny_dyno/attributes/processing'
+require 'tiny_dyno/attributes/readonly'
 
 module TinyDyno
 

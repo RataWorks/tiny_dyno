@@ -10,7 +10,7 @@ module TinyDyno
   # and how to get and set values.
   module Attributes
     extend ActiveSupport::Concern
-    include Nested
+    include Dynamic
     include Processing
     include Readonly
 

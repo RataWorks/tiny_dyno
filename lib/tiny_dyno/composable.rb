@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'tiny_dyno/persistable'
+require 'tiny_dyno/stateful'
 
 module TinyDyno
 
@@ -25,11 +26,13 @@ module TinyDyno
     include Attributes
     include Fields
     include Persistable
+    include Stateful
 
     MODULES = [
       Attributes,
       Fields,
       Persistable,
+      Stateful,
       ActiveModel::Model,
       ActiveModel::Validations
     ]

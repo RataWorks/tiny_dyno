@@ -95,11 +95,7 @@ module TinyDyno
       if attribute_missing?(normalized)
         raise ActiveModel::MissingAttributeError, "Missing attribute: '#{name}'."
       end
-      if hash_dot_syntax?(normalized)
-        attributes.__nested__(normalized)
-      else
-        attributes[normalized]
-      end
+      attributes[normalized]
     end
     alias :[] :read_attribute
 
@@ -259,20 +255,6 @@ module TinyDyno
       else
         selection.key?(name)
       end
-    end
-
-    # Does the string contain dot syntax for accessing hashes?
-    #
-    # @api private
-    #
-    # @example Is the string in dot syntax.
-    #   model.hash_dot_syntax?
-    #
-    # @return [ true, false ] If the string contains a "."
-    #
-    # @since 3.0.15
-    def hash_dot_syntax?(string)
-      string.include?(".".freeze)
     end
 
     # Return the typecasted value for a field.

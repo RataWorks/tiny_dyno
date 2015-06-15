@@ -6,10 +6,10 @@
 # require "tiny_dyno/timestamps" # priority: 3,4
 
 require 'tiny_dyno/composable' # I like the idea, but need to implement this differently to fit DynamoDB
-require 'tiny_dyno/factory'
+# require 'tiny_dyno/factory'
 require 'tiny_dyno/fields'
 require 'tiny_dyno/attributes'
-require 'tiny_dyno/interceptable'
+# require 'tiny_dyno/interceptable'
 
 module TinyDyno
 

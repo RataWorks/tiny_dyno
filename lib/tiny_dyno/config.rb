@@ -62,5 +62,15 @@ module TinyDyno
       configuration = settings
       self.options = configuration[:options]
     end
+    # Register a model in the application with Mongoid.
+    #
+    # @example Register a model.
+    #   config.register_model(Band)
+    #
+    # @param [ Class ] klass The model to register.
+    def register_model(klass)
+      models.push(klass) unless models.include?(klass)
+    end
+
   end
 end

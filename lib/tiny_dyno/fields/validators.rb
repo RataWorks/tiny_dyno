@@ -1,2 +1,2 @@
 # encoding: utf-8
-require "mongoid/fields/validators/macro"
+require "tiny_dyno/fields/validators/macro"

@@ -9,8 +9,8 @@ require 'tiny_dyno/composable' # I like the idea, but need to implement this dif
 require 'tiny_dyno/factory'
 require 'tiny_dyno/fields'
 require 'tiny_dyno/attributes'
-
 require 'tiny_dyno/interceptable'
+
 module TinyDyno
 
   # This is the base module for all domain objects that need to be persisted to

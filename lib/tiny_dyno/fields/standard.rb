@@ -1,5 +1,5 @@
 # encoding: utf-8
-module Mongoid
+module TinyDyno
   module Fields
     class Standard
 

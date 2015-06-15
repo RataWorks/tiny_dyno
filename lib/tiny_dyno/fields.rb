@@ -1,10 +1,10 @@
 # encoding: utf-8
-require "mongoid/fields/standard"
-require "mongoid/fields/foreign_key"
-require "mongoid/fields/localized"
-require "mongoid/fields/validators"
+require "tiny_dyno/fields/standard"
+require "tiny_dyno/fields/foreign_key"
+require "tiny_dyno/fields/localized"
+require "tiny_dyno/fields/validators"
 
-module Mongoid
+module TinyDyno
 
   # This module defines behaviour for fields.
   module Fields
@@ -17,7 +17,7 @@ module Mongoid
       array: Array,
       big_decimal: BigDecimal,
       binary: BSON::Binary,
-      boolean: Mongoid::Boolean,
+      boolean: TinyDyno::Boolean,
       date: Date,
       date_time: DateTime,
       float: Float,
@@ -187,7 +187,7 @@ module Mongoid
       # provided in the field definition -- even if it is false or nil.
       #
       # @example
-      #   Mongoid::Fields.option :required do |model, field, value|
+      #   TinyDyno::Fields.option :required do |model, field, value|
       #     model.validates_presence_of field if value
       #   end
       #
@@ -203,7 +203,7 @@ module Mongoid
       # Return a map of custom option names to their handlers.
       #
       # @example
-      #   Mongoid::Fields.options
+      #   TinyDyno::Fields.options
       #   # => { :required => #<Proc:0x00000100976b38> }
       #
       # @return [ Hash ] the option map
@@ -346,15 +346,15 @@ module Mongoid
         field
       end
 
-      # Run through all custom options stored in Mongoid::Fields.options and
+      # Run through all custom options stored in TinyDyno::Fields.options and
       # execute the handler if the option is provided.
       #
       # @example
-      #   Mongoid::Fields.option :custom do
+      #   TinyDyno::Fields.option :custom do
       #     puts "called"
       #   end
       #
-      #   field = Mongoid::Fields.new(:test, :custom => true)
+      #   field = TinyDyno::Fields.new(:test, :custom => true)
       #   Person.process_options(field)
       #   # => "called"
       #
@@ -569,7 +569,7 @@ module Mongoid
 
       def unmapped_type(options)
         if "Boolean" == options[:type].to_s
-          Mongoid::Boolean
+          TinyDyno::Boolean
         else
           options[:type] || Object
         end

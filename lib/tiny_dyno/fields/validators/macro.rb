@@ -1,5 +1,5 @@
 # encoding: utf-8
-module Mongoid
+module TinyDyno
   module Fields
     module Validators
 
@@ -52,16 +52,16 @@ module Mongoid
         # @since 3.0.0
         def validate_name(klass, name, options)
           [name, "#{name}?".to_sym, "#{name}=".to_sym].each do |n|
-            if Mongoid.destructive_fields.include?(n)
+            if TinyDyno.destructive_fields.include?(n)
               raise Errors::InvalidField.new(klass, n)
             end
           end
 
           if !options[:overwrite] && klass.fields.keys.include?(name.to_s)
-            if Mongoid.duplicate_fields_exception
+            if TinyDyno.duplicate_fields_exception
               raise Errors::InvalidField.new(klass, name)
             else
-              Mongoid.logger.warn("Overwriting existing field #{name} in class #{klass.name}.") if Mongoid.logger
+              TinyDyno.logger.warn("Overwriting existing field #{name} in class #{klass.name}.") if TinyDyno.logger
             end
           end
         end

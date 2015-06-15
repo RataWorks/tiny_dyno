@@ -27,7 +27,7 @@ module TinyDyno
       # current environment.
       #
       # @example Load the yaml.
-      #   Environment.load_yaml("/work/mongoid.yml")
+      #   Environment.load_yaml("/work/tiny_dyno.yml")
       #
       # @param [ String ] path The location of the file.
       #

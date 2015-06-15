@@ -1,10 +1,10 @@
 # encoding: utf-8
 
-require "mongoid/persistable"
+require "tiny_dyno/persistable"
 
-module Mongoid
+module TinyDyno
 
-  # This module provides inclusions of all behaviour in a Mongoid document.
+  # This module provides inclusions of all behaviour in a TinyDyno document.
   #
   # @since 4.0.0
   module Composable
@@ -36,10 +36,10 @@ module Mongoid
     class << self
 
       # Get a list of methods that would be a bad idea to define as field names
-      # or override when including Mongoid::Document.
+      # or override when including TinyDyno::Document.
       #
       # @example Bad thing!
-      #   Mongoid::Components.prohibited_methods
+      #   TinyDyno::Components.prohibited_methods
       #
       # @return [ Array<Symbol> ]
       #

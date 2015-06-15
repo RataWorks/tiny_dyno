@@ -18,6 +18,7 @@ module TinyDyno
     option :raise_not_found_error, default: true
     option :use_activesupport_time_zone, default: true
     option :use_utc, default: false
+    option :duplicate_fields_exception, default: false
 
     # Load the settings from a compliant tiny_dyno.yml file. This can be used for
     # easy setup with frameworks other than Rails.

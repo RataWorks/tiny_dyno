@@ -1,8 +1,6 @@
 # encoding: utf-8
-require "tiny_dyno/fields/standard"
-require "tiny_dyno/fields/foreign_key"
-require "tiny_dyno/fields/localized"
-require "tiny_dyno/fields/validators"
+require 'tiny_dyno/fields/standard'
+require 'tiny_dyno/fields/validators'
 
 module TinyDyno
 
@@ -39,14 +37,12 @@ module TinyDyno
 
     included do
       class_attribute :aliased_fields
-      class_attribute :localized_fields
       class_attribute :fields
       class_attribute :pre_processed_defaults
       class_attribute :post_processed_defaults
 
       self.aliased_fields = { "id" => "_id" }
       self.fields = {}
-      self.localized_fields = {}
       self.pre_processed_defaults = []
       self.post_processed_defaults = []
 
@@ -391,11 +387,6 @@ module TinyDyno
         create_field_setter(name, meth, field)
         create_field_check(name, meth)
 
-        if options[:localize]
-          create_translations_getter(name, meth)
-          create_translations_setter(name, meth, field)
-          localized_fields[name] = field
-        end
       end
 
       # Create the getter method for the provided field.
@@ -460,9 +451,6 @@ module TinyDyno
         generated_methods.module_eval do
           re_define_method("#{meth}=") do |value|
             val = write_attribute(name, value)
-            if field.foreign_key?
-              remove_ivar(field.metadata.name)
-            end
             val
           end
         end
@@ -562,7 +550,6 @@ module TinyDyno
         opts = options.merge(klass: self)
         type_mapping = TYPE_MAPPINGS[options[:type]]
         opts[:type] = type_mapping || unmapped_type(options)
-        return Fields::Localized.new(name, opts) if options[:localize]
         return Fields::ForeignKey.new(name, opts) if options[:identity]
         Fields::Standard.new(name, opts)
       end

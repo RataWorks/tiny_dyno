@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "tiny_dyno/persistable"
+require 'tiny_dyno/persistable'
 
 module TinyDyno
 

@@ -8,31 +8,28 @@ module TinyDyno
   module Fields
     extend ActiveSupport::Concern
 
-    # For fields defined with symbols use the correct class.
+
+    # Very straight forward mapping using descriptive symbols
+    # and using language as used out in the DynamoDB API
     #
-    # @since 4.0.0
+    # http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
     TYPE_MAPPINGS = {
-      array: Array,
-      big_decimal: BigDecimal,
-      binary: BSON::Binary,
-      boolean: TinyDyno::Boolean,
-      date: Date,
-      date_time: DateTime,
-      float: Float,
-      hash: Hash,
-      integer: Integer,
-      object_id: BSON::ObjectId,
-      range: Range,
-      regexp: Regexp,
-      set: Set,
-      string: String,
-      symbol: Symbol,
-      time: Time
-    }.with_indifferent_access
+        binary_blob: 'B',
+        bool: 'BOOL',
+        binary_set: 'BS',
+        list: 'L',
+        map: 'M',
+        number: 'N',
+        number_set: 'NS',
+        null: 'NULL',
+        string: 'S',
+        string_set: 'SS'
+    }
 
     # Constant for all names of the id field in a document.
     #
     # @since 5.0.0
+    # TODO, rework as per HashKey , RangeKey paradigm
     IDS = [ :_id, :id, '_id', 'id' ].freeze
 
     included do
@@ -46,11 +43,17 @@ module TinyDyno
       self.pre_processed_defaults = []
       self.post_processed_defaults = []
 
+      # TODO, is there a way for us to generate a valid HashKey Value?
+      # and should we?
+      #
+      # Though, at minimum we should guide users towards best practices
+      # http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GuidelinesForTables.html#GuidelinesForTables.UniformWorkload
+
       field(
         :_id,
-        default: ->{ BSON::ObjectId.new },
+        default: ->{ 0 },
         pre_processed: true,
-        type: BSON::ObjectId
+        type: :number
       )
 
       alias :id :_id
@@ -550,7 +553,6 @@ module TinyDyno
         opts = options.merge(klass: self)
         type_mapping = TYPE_MAPPINGS[options[:type]]
         opts[:type] = type_mapping || unmapped_type(options)
-        return Fields::ForeignKey.new(name, opts) if options[:identity]
         Fields::Standard.new(name, opts)
       end
 

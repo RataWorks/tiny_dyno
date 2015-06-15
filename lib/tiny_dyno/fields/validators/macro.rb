@@ -51,12 +51,6 @@ module TinyDyno
         #
         # @since 3.0.0
         def validate_name(klass, name, options)
-          [name, "#{name}?".to_sym, "#{name}=".to_sym].each do |n|
-            if TinyDyno.destructive_fields.include?(n)
-              raise Errors::InvalidField.new(klass, n)
-            end
-          end
-
           if !options[:overwrite] && klass.fields.keys.include?(name.to_s)
             if TinyDyno.duplicate_fields_exception
               raise Errors::InvalidField.new(klass, name)

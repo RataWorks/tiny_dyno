@@ -1,9 +1,10 @@
-require 'tiny_dyno/threaded'
+require 'active_model'
+
+require 'tiny_dyno/extensions/module'
 require 'tiny_dyno/attributes'
 require 'tiny_dyno/fields'
-require 'tiny_dyno/composable' # I like the idea, but need to implement this differently to fit DynamoDB
-
-require 'tiny_dyno/extensions'
+require 'tiny_dyno/stateful'
+require 'tiny_dyno/interceptable'
 
 module TinyDyno
 
@@ -11,7 +12,14 @@ module TinyDyno
   # the database as documents.
   module Document
     extend ActiveSupport::Concern
-    include Composable
+
+    include ActiveModel::Model
+    include ActiveModel::ForbiddenAttributesProtection
+
+    include TinyDyno::Attributes
+    include TinyDyno::Fields
+    include TinyDyno::Stateful
+    include TinyDyno::Interceptable
 
     attr_accessor :__selected_fields
     attr_reader :new_record
@@ -97,7 +105,7 @@ module TinyDyno
       end
       # TODO figure out how to enable callbacks
       # callbacks.
-      run_callbacks(:initialize) unless _initialize_callbacks.empty?
+      # run_callbacks(:initialize) unless _initialize_callbacks.empty?
     end
 
     # Return the model name of the document.
@@ -136,32 +144,32 @@ module TinyDyno
       [ self ]
     end
 
-    # Return a hash of the entire document hierarchy from this document and
-    # below. Used when the attributes are needed for everything and not just
-    # the current document.
-    #
-    # @example Get the full hierarchy.
-    #   person.as_document
-    #
-    # @return [ Hash ] A hash of all attributes in the hierarchy.
-    #
-    # @since 1.0.0
-    def as_document
-      return attributes if frozen?
-      embedded_relations.each_pair do |name, meta|
-        without_autobuild do
-          relation, stored = send(name), meta.store_as
-          if attributes.key?(stored) || !relation.blank?
-            if relation
-              attributes[stored] = relation.as_document
-            else
-              attributes.delete(stored)
-            end
-          end
-        end
-      end
-      attributes
-    end
+    # # Return a hash of the entire document hierarchy from this document and
+    # # below. Used when the attributes are needed for everything and not just
+    # # the current document.
+    # #
+    # # @example Get the full hierarchy.
+    # #   person.as_document
+    # #
+    # # @return [ Hash ] A hash of all attributes in the hierarchy.
+    # #
+    # # @since 1.0.0
+    # def as_document
+    #   return attributes if frozen?
+    #   embedded_relations.each_pair do |name, meta|
+    #     without_autobuild do
+    #       relation, stored = send(name), meta.store_as
+    #       if attributes.key?(stored) || !relation.blank?
+    #         if relation
+    #           attributes[stored] = relation.as_document
+    #         else
+    #           attributes.delete(stored)
+    #         end
+    #       end
+    #     end
+    #   end
+    #   attributes
+    # end
 
     # Returns an instance of the specified class with the attributes,
     # errors, and embedded documents of the current document.
@@ -190,17 +198,6 @@ module TinyDyno
       became.instance_variable_set(:@destroyed, destroyed?)
       became.changed_attributes["_type"] = self.class.to_s
       became._type = klass.to_s
-
-      # mark embedded docs as persisted
-      embedded_relations.each_pair do |name, meta|
-        without_autobuild do
-          relation = became.__send__(name)
-          Array.wrap(relation).each do |r|
-            r.instance_variable_set(:@new_record, new_record?)
-          end
-        end
-      end
-
       became
     end
 
@@ -227,14 +224,14 @@ module TinyDyno
 
     private
 
-    # Returns the logger
-    #
-    # @return [ Logger ] The configured logger or a default Logger instance.
-    #
-    # @since 2.2.0
-    def logger
-      TinyDyno.logger
-    end
+    # # Returns the logger
+    # #
+    # # @return [ Logger ] The configured logger or a default Logger instance.
+    # #
+    # # @since 2.2.0
+    # def logger
+    #   TinyDyno.logger
+    # end
 
     # Get the name of the model used in caching.
     #
@@ -293,7 +290,6 @@ module TinyDyno
         doc = allocate
         doc.__selected_fields = selected_fields
         doc.instance_variable_set(:@attributes, attributes)
-        doc.apply_defaults
         yield(doc) if block_given?
         doc.run_callbacks(:find) unless doc._find_callbacks.empty?
         doc.run_callbacks(:initialize) unless doc._initialize_callbacks.empty?
@@ -310,15 +306,6 @@ module TinyDyno
       # @since 1.0.0
       def _types
         @_type ||= (descendants + [ self ]).uniq.map(&:to_s)
-      end
-
-      # Set the i18n scope to overwrite ActiveModel.
-      #
-      # @return [ Symbol ] :tiny_dyno
-      #
-      # @since 2.0.0
-      def i18n_scope
-        :tiny_dyno
       end
 
       # Returns the logger

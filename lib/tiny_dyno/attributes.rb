@@ -1,7 +1,5 @@
 # encoding: utf-8
 require 'active_model/attribute_methods'
-# require 'tiny_dyno/attributes/dynamic'
-# require 'tiny_dyno/attributes/nested'
 require 'tiny_dyno/attributes/processing'
 require 'tiny_dyno/attributes/readonly'
 
@@ -11,12 +9,11 @@ module TinyDyno
   # and how to get and set values.
   module Attributes
     extend ActiveSupport::Concern
-    # include Dynamic
+
     include Processing
     include Readonly
 
     attr_reader :attributes
-    alias :raw_attributes :attributes
 
     # Determine if an attribute is present.
     #
@@ -24,6 +21,7 @@ module TinyDyno
     #   person.attribute_present?("title")
     #
     # @param [ String, Symbol ] name The name of the attribute.
+    #
     #
     # @return [ true, false ] True if present, false if not.
     #
@@ -33,18 +31,6 @@ module TinyDyno
       !attribute.blank? || attribute == false
     rescue ActiveModel::MissingAttributeError
       false
-    end
-
-    # Get the attributes that have not been cast.
-    #
-    # @example Get the attributes before type cast.
-    #   document.attributes_before_type_cast
-    #
-    # @return [ Hash ] The uncast attributes.
-    #
-    # @since 3.1.0
-    def attributes_before_type_cast
-      @attributes_before_type_cast ||= {}
     end
 
     # Does the document have the provided attribute?
@@ -59,22 +45,6 @@ module TinyDyno
     # @since 3.0.0
     def has_attribute?(name)
       attributes.key?(name.to_s)
-    end
-
-    # Does the document have the provided attribute before it was assigned
-    # and type cast?
-    #
-    # @example Does the document have the attribute before it was assigned?
-    #   model.has_attribute_before_type_cast?(:name)
-    #
-    # @param [ String, Symbol ] name The name of the attribute.
-    #
-    # @return [ true, false ] If the key is present in the
-    #   attributes_before_type_cast.
-    #
-    # @since 3.1.0
-    def has_attribute_before_type_cast?(name)
-      attributes_before_type_cast.key?(name.to_s)
     end
 
     # Read a value from the document attributes. If the value does not exist
@@ -101,31 +71,8 @@ module TinyDyno
       else
         attributes[normalized]
       end
-
     end
     alias :[] :read_attribute
-
-    # Read a value from the attributes before type cast. If the value has not
-    # yet been assigned then this will return the attribute's existing value
-    # using read_attribute.
-    #
-    # @example Read an attribute before type cast.
-    #   person.read_attribute_before_type_cast(:price)
-    #
-    # @param [ String, Symbol ] name The name of the attribute to get.
-    #
-    # @return [ Object ] The value of the attribute before type cast, if
-    #   available. Otherwise, the value of the attribute.
-    #
-    # @since 3.1.0
-    def read_attribute_before_type_cast(name)
-      attr = name.to_s
-      if attributes_before_type_cast.key?(attr)
-        attributes_before_type_cast[attr]
-      else
-        read_attribute(attr)
-      end
-    end
 
     # Remove a value from the +Document+ attributes. If the value does not exist
     # it will fail gracefully.
@@ -144,11 +91,9 @@ module TinyDyno
       unless attribute_writable?(name)
         raise Errors::ReadonlyAttribute.new(name, :nil)
       end
-      _assigning do
-        attribute_will_change!(access)
-        delayed_atomic_unsets[atomic_attribute_name(access)] = [] unless new_record?
-        attributes.delete(access)
-      end
+      attribute_will_change!(access)
+      delayed_atomic_unsets[atomic_attribute_name(access)] = [] unless new_record?
+      attributes.delete(access)
     end
 
     # Write a single attribute to the document attribute hash. This will
@@ -168,37 +113,14 @@ module TinyDyno
     def write_attribute(name, value)
       access = database_field_name(name.to_s)
       if attribute_writable?(access)
-        _assigning do
-          validate_attribute_value(access, value)
-          attributes_before_type_cast[name.to_s] = value
-          typed_value = typed_value_for(access, value)
-          unless attributes[access] == typed_value || attribute_changed?(access)
-            attribute_will_change!(access)
-          end
-          attributes[access] = typed_value
-          typed_value
+        unless attributes[access] == value|| attribute_changed?(access)
+          attribute_will_change!(access)
         end
+        attributes[access] = value
+        value
       end
     end
     alias :[]= :write_attribute
-
-    # def write_attribute(name, value)
-    #   access = database_field_name(name.to_s)
-    #   if attribute_writable?(access)
-    #     _assigning do
-    #       validate_attribute_value(access, value)
-    #       attributes_before_type_cast[name.to_s] = value
-    #       typed_value = typed_value_for(access, value)
-    #       unless attributes[access] == value || attribute_changed?(access)
-    #         attribute_will_change!(access)
-    #       end
-    #     end
-    #     attributes[access] = typed_value
-    #     typed_value
-    #     end
-    #   end
-    # end
-    # alias :[]= :write_attribute
 
     # Allows you to set all the attributes for a particular mass-assignment security role
     # by passing in a hash of attributes with keys matching the attribute names
@@ -215,7 +137,7 @@ module TinyDyno
     #
     # @since 2.2.1
     def assign_attributes(attrs = nil)
-      _assigning { process_attributes(attrs) }
+      process_attributes(attrs)
     end
 
     # Writes the supplied attributes hash to the document. This will only
@@ -253,7 +175,7 @@ module TinyDyno
       return false unless selection
       field = fields[name]
       (selection.values.first == 0 && selection_excluded?(name, selection, field)) ||
-        (selection.values.first == 1 && !selection_included?(name, selection, field))
+          (selection.values.first == 1 && !selection_included?(name, selection, field))
     end
 
     private
@@ -274,76 +196,6 @@ module TinyDyno
       end
     end
 
-    # Return the typecasted value for a field.
-    #
-    # @example Get the value typecasted.
-    #   person.typed_value_for(:title, :sir)
-    #
-    # @param [ String, Symbol ] key The field name.
-    # @param [ Object ] value The uncast value.
-    #
-    # @return [ Object ] The cast value.
-    #
-    # @since 1.0.0
-    def typed_value_for(key, value)
-      fields.key?(key) ? fields[key].to_dyno_type(value) : value.to_dyno_type
-    end
-
-    module ClassMethods
-
-      # Alias the provided name to the original field. This will provide an
-      # aliased getter, setter, existance check, and all dirty attribute
-      # methods.
-      #
-      # @example Alias the attribute.
-      #   class Product
-      #     include TinyDyno::Document
-      #     field :price, :type => Float
-      #     alias_attribute :cost, :price
-      #   end
-      #
-      # @param [ Symbol ] name The new name.
-      # @param [ Symbol ] original The original name.
-      #
-      # @since 2.3.0
-      def alias_attribute(name, original)
-        aliased_fields[name.to_s] = original.to_s
-        class_eval <<-RUBY
-          alias #{name}  #{original}
-          alias #{name}= #{original}=
-          alias #{name}? #{original}?
-          alias #{name}_change   #{original}_change
-          alias #{name}_changed? #{original}_changed?
-          alias reset_#{name}!   reset_#{original}!
-          alias reset_#{name}_to_default!   reset_#{original}_to_default!
-          alias #{name}_was      #{original}_was
-          alias #{name}_will_change! #{original}_will_change!
-          alias #{name}_before_type_cast #{original}_before_type_cast
-        RUBY
-      end
-    end
-
-    private
-
-    # Validates an attribute value. This provides validation checking if
-    # the value is valid for given a field.
-    # For now, only Hash and Array fields are validated.
-    #
-    # @param [ String, Symbol ] name The name of the attribute to validate.
-    # @param [ Object ] value The to be validated.
-    #
-    # TODO, do hard validation as per
-    # http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
-    def validate_attribute_value(access, value)
-      return unless fields[access] && value
-      validatable_types = [ Hash, Array ]
-      if validatable_types.include? fields[access].type
-        unless value.is_a? fields[access].type
-          raise TinyDyno::Errors::InvalidValue.new(fields[access].type, value.class)
-        end
-      end
-    end
-
     # Does the string contain dot syntax for accessing hashes?
     #
     # @api private
@@ -356,6 +208,284 @@ module TinyDyno
     # @since 3.0.15
     def hash_dot_syntax?(string)
       string.include?(".".freeze)
+    end
+
+    # Get the changed attributes for the document.
+    #
+    # @example Get the changed attributes.
+    #   model.changed
+    #
+    # @return [ Array<String> ] The changed attributes.
+    #
+    # @since 2.4.0
+    def changed
+      changed_attributes.keys.select { |attr| attribute_change(attr) }
+    end
+
+    # Has the document changed?
+    #
+    # @example Has the document changed?
+    #   model.changed?
+    #
+    # @return [ true, false ] If the document is changed.
+    #
+    # @since 2.4.0
+    def changed?
+      changes.values.any? { |val| val } || children_changed?
+    end
+
+    # Get the attribute changes.
+    #
+    # @example Get the attribute changes.
+    #   model.changed_attributes
+    #
+    # @return [ Hash<String, Object> ] The attribute changes.
+    #
+    # @since 2.4.0
+    def changed_attributes
+      @changed_attributes ||= {}
+    end
+
+    # Get all the changes for the document.
+    #
+    # @example Get all the changes.
+    #   model.changes
+    #
+    # @return [ Hash<String, Array<Object, Object> ] The changes.
+    #
+    # @since 2.4.0
+    def changes
+      _changes = {}
+      changed.each do |attr|
+        change = attribute_change(attr)
+        _changes[attr] = change if change
+      end
+      _changes
+    end
+
+
+    # Gets all the new values for each of the changed fields, to be passed to
+    # a MongoDB $set modifier.
+    #
+    # @example Get the setters for the atomic updates.
+    #   person = Person.new(:title => "Sir")
+    #   person.title = "Madam"
+    #   person.setters # returns { "title" => "Madam" }
+    #
+    # @return [ Hash ] A +Hash+ of atomic setters.
+    #
+    # @since 2.0.0
+    def setters
+      mods = {}
+      changes.each_pair do |name, changes|
+        if changes
+          old, new = changes
+          field = fields[name]
+          key = atomic_attribute_name(name)
+          if field && field.resizable?
+            field.add_atomic_changes(self, name, key, mods, new, old)
+          else
+            mods[key] = new unless atomic_unsets.include?(key)
+          end
+        end
+      end
+      mods
+    end
+
+    private
+
+    # Get the old and new value for the provided attribute.
+    #
+    # @example Get the attribute change.
+    #   model.attribute_change("name")
+    #
+    # @param [ String ] attr The name of the attribute.
+    #
+    # @return [ Array<Object> ] The old and new values.
+    #
+    # @since 2.1.0
+    def attribute_change(attr)
+      attr = database_field_name(attr)
+      [changed_attributes[attr], attributes[attr]] if attribute_changed?(attr)
+    end
+
+    # Determine if a specific attribute has changed.
+    #
+    # @example Has the attribute changed?
+    #   model.attribute_changed?("name")
+    #
+    # @param [ String ] attr The name of the attribute.
+    #
+    # @return [ true, false ] Whether the attribute has changed.
+    #
+    # @since 2.1.6
+    def attribute_changed?(attr)
+      attr = database_field_name(attr)
+      return false unless changed_attributes.key?(attr)
+      changed_attributes[attr] != attributes[attr]
+    end
+
+
+    # Get the previous value for the attribute.
+    #
+    # @example Get the previous value.
+    #   model.attribute_was("name")
+    #
+    # @param [ String ] attr The attribute name.
+    #
+    # @since 2.4.0
+    def attribute_was(attr)
+      attr = database_field_name(attr)
+      attribute_changed?(attr) ? changed_attributes[attr] : attributes[attr]
+    end
+
+    # Flag an attribute as going to change.
+    #
+    # @example Flag the attribute.
+    #   model.attribute_will_change!("name")
+    #
+    # @param [ String ] attr The name of the attribute.
+    #
+    # @return [ Object ] The old value.
+    #
+    # @since 2.3.0
+    def attribute_will_change!(attr)
+      unless changed_attributes.key?(attr)
+        read_attr =  read_attribute(attr)
+        if read_attr.nil?
+          changed_attributes[attr] = nil
+        else
+          changed_attributes[attr] = read_attribute(attr).__deep_copy__
+        end
+      end
+    end
+
+    module ClassMethods
+
+      private
+
+      # Generate all the dirty methods needed for the attribute.
+      #
+      # @example Generate the dirty methods.
+      #   Model.create_dirty_methods("name", "name")
+      #
+      # @param [ String ] name The name of the field.
+      # @param [ String ] name The name of the accessor.
+      #
+      # @return [ Module ] The fields module.
+      #
+      # @since 2.4.0
+      def create_dirty_methods(name, meth)
+        create_dirty_change_accessor(name, meth)
+        create_dirty_change_check(name, meth)
+        create_dirty_change_flag(name, meth)
+        create_dirty_default_change_check(name, meth)
+        create_dirty_previous_value_accessor(name, meth)
+        create_dirty_reset(name, meth)
+      end
+
+      # Creates the dirty change accessor.
+      #
+      # @example Create the accessor.
+      #   Model.create_dirty_change_accessor("name", "alias")
+      #
+      # @param [ String ] name The attribute name.
+      # @param [ String ] meth The name of the accessor.
+      #
+      # @since 3.0.0
+      def create_dirty_change_accessor(name, meth)
+        generated_methods.module_eval do
+          re_define_method("#{meth}_change") do
+            attribute_change(name)
+          end
+        end
+      end
+
+      # Creates the dirty change check.
+      #
+      # @example Create the check.
+      #   Model.create_dirty_change_check("name", "alias")
+      #
+      # @param [ String ] name The attribute name.
+      # @param [ String ] meth The name of the accessor.
+      #
+      # @since 3.0.0
+      def create_dirty_change_check(name, meth)
+        generated_methods.module_eval do
+          re_define_method("#{meth}_changed?") do
+            attribute_changed?(name)
+          end
+        end
+      end
+
+      # Creates the dirty default change check.
+      #
+      # @example Create the check.
+      #   Model.create_dirty_default_change_check("name", "alias")
+      #
+      # @param [ String ] name The attribute name.
+      # @param [ String ] meth The name of the accessor.
+      #
+      # @since 3.0.0
+      def create_dirty_default_change_check(name, meth)
+        generated_methods.module_eval do
+          re_define_method("#{meth}_changed_from_default?") do
+            attribute_changed_from_default?(name)
+          end
+        end
+      end
+
+      # Creates the dirty change previous value accessor.
+      #
+      # @example Create the accessor.
+      #   Model.create_dirty_previous_value_accessor("name", "alias")
+      #
+      # @param [ String ] name The attribute name.
+      # @param [ String ] meth The name of the accessor.
+      #
+      # @since 3.0.0
+      def create_dirty_previous_value_accessor(name, meth)
+        generated_methods.module_eval do
+          re_define_method("#{meth}_was") do
+            attribute_was(name)
+          end
+        end
+      end
+
+      # Creates the dirty change flag.
+      #
+      # @example Create the flag.
+      #   Model.create_dirty_change_flag("name", "alias")
+      #
+      # @param [ String ] name The attribute name.
+      # @param [ String ] meth The name of the accessor.
+      #
+      # @since 3.0.0
+      def create_dirty_change_flag(name, meth)
+        generated_methods.module_eval do
+          re_define_method("#{meth}_will_change!") do
+            attribute_will_change!(name)
+          end
+        end
+      end
+
+      # Creates the dirty change reset.
+      #
+      # @example Create the reset.
+      #   Model.create_dirty_reset("name", "alias")
+      #
+      # @param [ String ] name The attribute name.
+      # @param [ String ] meth The name of the accessor.
+      #
+      # @since 3.0.0
+      def create_dirty_reset(name, meth)
+        generated_methods.module_eval do
+          re_define_method("reset_#{meth}!") do
+            reset_attribute!(name)
+          end
+        end
+      end
+
     end
 
   end

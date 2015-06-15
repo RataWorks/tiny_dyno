@@ -56,19 +56,6 @@ module TinyDyno
       @destroyed ||= false
     end
 
-    # Determine if the document can be pushed.
-    #
-    # @example Is this pushable?
-    #   person.pushable?
-    #
-    # @return [ true, false ] Is the document new and embedded?
-    def pushable?
-      new_record? &&
-        embedded_many? &&
-        _parent.persisted? &&
-        !_parent.delayed_atomic_sets[atomic_path]
-    end
-
     # Is the document readonly?
     #
     # @example Is the document readonly?
@@ -90,7 +77,7 @@ module TinyDyno
     #
     # @since 2.1.0
     def settable?
-      new_record? && embedded_one? && _parent.persisted?
+      new_record?
     end
 
     # Is the document updateable?

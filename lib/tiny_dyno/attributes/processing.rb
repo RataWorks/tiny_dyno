@@ -50,11 +50,6 @@ module TinyDyno
           pending_relations[name] = value
           return true
         end
-        if nested_attributes.has_key?(name)
-          pending_nested[name] = value
-          return true
-        end
-        return false
       end
 
       # Get all the pending relations that need to be set.
@@ -67,18 +62,6 @@ module TinyDyno
       # @since 2.0.0.rc.7
       def pending_relations
         @pending_relations ||= {}
-      end
-
-      # Get all the pending nested attributes that need to be set.
-      #
-      # @example Get the pending nested attributes.
-      #   document.pending_nested
-      #
-      # @return [ Hash ] The pending nested attributes in key/value pairs.
-      #
-      # @since 2.0.0.rc.7
-      def pending_nested
-        @pending_nested ||= {}
       end
 
       # If the attribute is dynamic, add a field for it with a type of object
@@ -100,19 +83,6 @@ module TinyDyno
         send("#{name}=", value)
       end
 
-      # Process all the pending nested attributes that needed to wait until
-      # ids were set to fire off.
-      #
-      # @example Process the nested attributes.
-      #   document.process_nested
-      #
-      # @since 2.0.0.rc.7
-      def process_nested
-        pending_nested.each_pair do |name, value|
-          send("#{name}=", value)
-        end
-      end
-
       # Process all the pending items, then clear them out.
       #
       # @example Process the pending items.
@@ -122,8 +92,8 @@ module TinyDyno
       #
       # @since 2.0.0.rc.7
       def process_pending
-        process_nested and process_relations
-        pending_nested.clear and pending_relations.clear
+        process_relations
+        pending_relations.clear
       end
 
       # Process all the pending relations that needed to wait until ids were set

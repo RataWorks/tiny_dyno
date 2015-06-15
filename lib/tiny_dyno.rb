@@ -1,40 +1,33 @@
-require 'active_support/inflector'
 require 'active_model'
-require 'aws-sdk'
 
 require 'tiny_dyno/version'
-require 'tiny_dyno/config'
+
 require 'tiny_dyno/loggable'
-
-require 'tiny_dyno/errors'
-
 require 'tiny_dyno/document'
-
-require 'tiny_dyno/extensions'
 
 module TinyDyno
   extend Loggable
   extend self
 
-  # Sets the TinyDyno configuration options. Best used by passing a block.
+  # Register a model in the application with TinyDyno.
   #
-  # @example Set up configuration options.
-  #   TinyDyno.configure do |config|
-  #     config.connect_to("tiny_dyno_test")
-  #   end
+  # @example Register a model.
+  #   config.register_model(Band)
   #
-  # @return [ Config ] The configuration object.
-  #
-  # @since 1.0.0
-  def configure
-    block_given? ? yield(Config) : Config
+  # @param [ Class ] klass The model to register.
+  def register_model(klass)
+    models.push(klass) unless models.include?(klass)
   end
 
-  # Take all the public instance methods from the Config singleton and allow
-  # them to be accessed through the TinyDyno module directly.
+  # Get all the models in the application - this is everything that includes
+  # TinyDyno::Document.
   #
-
-  # @since 1.0.0
-  delegate(*(Config.public_instance_methods(false) - [ :logger=, :logger ] << { to: Config }))
+  # @example Get all the models.
+  #   config.models
+  #
+  # @return [ Array<Class> ] All the models in the application.
+  def models
+    @models ||= []
+  end
 
 end

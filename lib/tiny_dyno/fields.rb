@@ -1,125 +1,29 @@
-# encoding: utf-8
 require 'tiny_dyno/fields/standard'
-require 'tiny_dyno/fields/validators'
 
-require 'pry'
 module TinyDyno
 
   # This module defines behaviour for fields.
   module Fields
     extend ActiveSupport::Concern
 
-
-    # Very straight forward mapping using descriptive symbols
-    # and using language as used out in the DynamoDB API
-    #
-    # http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
-    # TODO
-    # if commented out, no idea on an equivalent ruby object class right now
-    TYPE_MAPPINGS = {
-        # binary_blob: 'B',
-        # bool: 'BOOL',
-        binary_set: Array,
-        list: Array,
-        map: Hash,
-        number: Integer,
-        number_set: Array,
-        # null: 'NULL',
-        string: String,
-        string_set: Array
+    DYNAMODB_ATTRIBUTE_TYPE_MAP = {
+        binary_blob: 'B',
+        bool: 'BOOL',
+        binary_set: 'BS',
+        list: 'L',
+        map: 'M',
+        number: 'N',
+        number_set: 'NS',
+        null: 'NULL',
+        string: 'S',
+        string_set: 'SS'
     }
 
-    # Constant for all names of the id field in a document.
-    #
-    # @since 5.0.0
-    # TODO, rework as per HashKey , RangeKey paradigm
-    IDS = [ :_id, :id, '_id', 'id' ].freeze
-
     included do
-      class_attribute :aliased_fields
       class_attribute :fields
-      class_attribute :pre_processed_defaults
-      class_attribute :post_processed_defaults
 
-      self.aliased_fields = { "id" => "_id" }
       self.fields = {}
-      self.pre_processed_defaults = []
-      self.post_processed_defaults = []
 
-      # TODO, is there a way for us to generate a valid HashKey Value?
-      # and should we?
-      #
-      # Though, at minimum we should guide users towards best practices
-      # http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GuidelinesForTables.html#GuidelinesForTables.UniformWorkload
-
-      field(
-        :_id,
-        default: ->{ 0 },
-        pre_processed: true,
-        type: :number
-      )
-
-      alias :id :_id
-      alias :id= :_id=
-    end
-
-    # Apply all default values to the document which are not procs.
-    #
-    # @example Apply all the non-proc defaults.
-    #   model.apply_pre_processed_defaults
-    #
-    # @return [ Array<String ] The names of the non-proc defaults.
-    #
-    # @since 2.4.0
-    def apply_pre_processed_defaults
-      pre_processed_defaults.each do |name|
-        apply_default(name)
-      end
-    end
-
-    # Apply all default values to the document which are procs.
-    #
-    # @example Apply all the proc defaults.
-    #   model.apply_post_processed_defaults
-    #
-    # @return [ Array<String ] The names of the proc defaults.
-    #
-    # @since 2.4.0
-    def apply_post_processed_defaults
-      post_processed_defaults.each do |name|
-        apply_default(name)
-      end
-    end
-
-    # Applies a single default value for the given name.
-    #
-    # @example Apply a single default.
-    #   model.apply_default("name")
-    #
-    # @param [ String ] name The name of the field.
-    #
-    # @since 2.4.0
-    def apply_default(name)
-      unless attributes.key?(name)
-        if field = fields[name]
-          default = field.eval_default(self)
-          unless default.nil? || field.lazy?
-            attribute_will_change!(name)
-            attributes[name] = default
-          end
-        end
-      end
-    end
-
-    # Apply all the defaults at once.
-    #
-    # @example Apply all the defaults.
-    #   model.apply_defaults
-    #
-    # @since 2.4.0
-    def apply_defaults
-      apply_pre_processed_defaults
-      apply_post_processed_defaults
     end
 
     # Returns an array of names for the attributes available on this object.
@@ -266,7 +170,6 @@ module TinyDyno
       # @return [ Field ] The generated field
       def field(name, options = {})
         named = name.to_s
-        Validators::Macro.validate(self, name, options)
         added = add_field(named, options)
         descendants.each do |subclass|
           subclass.add_field(named, options)
@@ -274,57 +177,7 @@ module TinyDyno
         added
       end
 
-      # Replace a field with a new type.
-      #
-      # @example Replace the field.
-      #   Model.replace_field("_id", String)
-      #
-      # @param [ String ] name The name of the field.
-      # @param [ Class ] type The new type of field.
-      #
-      # @return [ Serializable ] The new field.
-      #
-      # @since 2.1.0
-      def replace_field(name, type)
-        remove_defaults(name)
-        add_field(name, fields[name].options.merge(type: type))
-      end
-
-      # Convenience method for determining if we are using +BSON::ObjectIds+ as
-      # our id.
-      #
-      # @example Does this class use object ids?
-      #   person.using_object_ids?
-      #
-      # @return [ true, false ] If the class uses BSON::ObjectIds for the id.
-      #
-      # @since 1.0.0
-      def using_object_ids?
-        fields["_id"].object_id_field?
-      end
-
       protected
-
-      # Add the defaults to the model. This breaks them up between ones that
-      # are procs and ones that are not.
-      #
-      # @example Add to the defaults.
-      #   Model.add_defaults(field)
-      #
-      # @param [ Field ] field The field to add for.
-      #
-      # @since 2.4.0
-      def add_defaults(field)
-        default, name = field.default_val, field.name.to_s
-        remove_defaults(name)
-        unless default.nil?
-          if field.pre_processed?
-            pre_processed_defaults.push(name)
-          else
-            post_processed_defaults.push(name)
-          end
-        end
-      end
 
       # Define a field attribute for the +Document+.
       #
@@ -334,17 +187,12 @@ module TinyDyno
       # @param [ Symbol ] name The name of the field.
       # @param [ Hash ] options The hash of options.
       def add_field(name, options = {})
-        aliased = options[:as]
-        aliased_fields[aliased.to_s] = name if aliased
         field = field_for(name, options)
         fields[name] = field
-        add_defaults(field)
         create_accessors(name, name, options)
-        create_accessors(name, aliased, options) if aliased
         process_options(field)
 
         create_dirty_methods(name, name)
-        create_dirty_methods(name, aliased) if aliased
         field
       end
 
@@ -389,7 +237,6 @@ module TinyDyno
         field = fields[name]
 
         create_field_getter(name, meth, field)
-        create_field_getter_before_type_cast(name, meth)
         create_field_setter(name, meth, field)
         create_field_check(name, meth)
 
@@ -403,41 +250,14 @@ module TinyDyno
       # @param [ String ] name The name of the attribute.
       # @param [ String ] meth The name of the method.
       # @param [ Field ] field The field.
-      def create_field_getter(name, meth, field)
+      def create_field_getter(name, meth, value)
         generated_methods.module_eval do
           re_define_method(meth) do
             raw = read_attribute(name)
             p "raw = #{ raw }"
-            if lazy_settable?(field, raw)
-              p "lazy writting: #{ raw }"
-              write_attribute(name, field.eval_default(self))
-            else
-              p "from dyno: #{ raw }"
-              value = field.from_dyno_type(raw)
-              attribute_will_change!(name) if value.resizable?
-              value
-            end
-          end
-        end
-      end
-
-      # Create the getter_before_type_cast method for the provided field. If
-      # the attribute has been assigned, return the attribute before it was
-      # type cast. Otherwise, delegate to the getter.
-      #
-      # @example Create the getter_before_type_cast.
-      #   Model.create_field_getter_before_type_cast("name", "name")
-      #
-      # @param [ String ] name The name of the attribute.
-      # @param [ String ] meth The name of the method.
-      def create_field_getter_before_type_cast(name, meth)
-        generated_methods.module_eval do
-          re_define_method("#{meth}_before_type_cast") do
-            if has_attribute_before_type_cast?(name)
-              read_attribute_before_type_cast(name)
-            else
-              send meth
-            end
+            p "from dyno: #{ raw }"
+            attribute_will_change!(name)
+            value
           end
         end
       end
@@ -477,49 +297,6 @@ module TinyDyno
         end
       end
 
-      # Create the translation getter method for the provided field.
-      #
-      # @example Create the translation getter.
-      #   Model.create_translations_getter("name", "name")
-      #
-      # @param [ String ] name The name of the attribute.
-      # @param [ String ] meth The name of the method.
-      #
-      # @since 2.4.0
-      def create_translations_getter(name, meth)
-        generated_methods.module_eval do
-          re_define_method("#{meth}_translations") do
-            (attributes[name] ||= {}).with_indifferent_access
-          end
-          alias_method :"#{meth}_t", :"#{meth}_translations"
-        end
-      end
-
-      # Create the translation setter method for the provided field.
-      #
-      # @example Create the translation setter.
-      #   Model.create_translations_setter("name", "name")
-      #
-      # @param [ String ] name The name of the attribute.
-      # @param [ String ] meth The name of the method.
-      # @param [ Field ] field The field.
-      #
-      # @since 2.4.0
-      def create_translations_setter(name, meth, field)
-        generated_methods.module_eval do
-          re_define_method("#{meth}_translations=") do |value|
-            attribute_will_change!(name)
-            if value
-              value.update_values do |_value|
-                field.type.to_dyno_type(_value)
-              end
-            end
-            attributes[name] = value
-          end
-          alias_method :"#{meth}_t=", :"#{meth}_translations="
-        end
-      end
-
       # Include the field methods as a module, so they can be overridden.
       #
       # @example Include the fields.
@@ -536,33 +313,13 @@ module TinyDyno
         end
       end
 
-      # Remove the default keys for the provided name.
-      #
-      # @example Remove the default keys.
-      #   Model.remove_defaults(name)
-      #
-      # @param [ String ] name The field name.
-      #
-      # @since 2.4.0
-      def remove_defaults(name)
-        pre_processed_defaults.delete_one(name)
-        post_processed_defaults.delete_one(name)
-      end
-
       def field_for(name, options)
         opts = options.merge(klass: self)
-        type_mapping = TYPE_MAPPINGS[options[:type]]
-        opts[:type] = type_mapping || unmapped_type(options)
+        type_mapping = DYNAMODB_ATTRIBUTE_TYPE_MAP[options[:type]]
+        opts[:type] = type_mapping
         Fields::Standard.new(name, opts)
       end
 
-      def unmapped_type(options)
-        if "Boolean" == options[:type].to_s
-          TinyDyno::Boolean
-        else
-          options[:type] || Object
-        end
-      end
     end
   end
 end

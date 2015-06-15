@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'active_model/attribute_methods'
-require 'tiny_dyno/attributes/dynamic'
+# require 'tiny_dyno/attributes/dynamic'
 require 'tiny_dyno/attributes/processing'
 require 'tiny_dyno/attributes/readonly'
 
@@ -10,7 +10,7 @@ module TinyDyno
   # and how to get and set values.
   module Attributes
     extend ActiveSupport::Concern
-    include Dynamic
+    # include Dynamic
     include Processing
     include Readonly
 

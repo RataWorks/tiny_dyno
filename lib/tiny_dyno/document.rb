@@ -96,16 +96,14 @@ module TinyDyno
     # @return [ Document ] A new document.
     # @since 1.0.0
     def initialize(attrs = nil)
-      _building do
-        @new_record = true
-        @attributes ||= {}
-        process_attributes(attrs) do
-          yield(self) if block_given?
-        end
-        # @todo: #2586: Need to have access to parent document in these
-        #   callbacks.
-        run_callbacks(:initialize) unless _initialize_callbacks.empty?
+      @new_record = true
+      @attributes ||= {}
+      process_attributes(attrs) do
+        yield(self) if block_given?
       end
+      # TODO figure out how to enable callbacks
+      # callbacks.
+      # run_callbacks(:initialize) unless _initialize_callbacks.empty?
     end
 
     # Return the model name of the document.

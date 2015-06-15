@@ -1,3 +1,5 @@
+require 'pry'
+
 # encoding: utf-8
 module TinyDyno
   module Attributes
@@ -132,6 +134,7 @@ module TinyDyno
       #
       # @since 4.0.0
       def method_missing(name, *args)
+        binding.pry
         attr = name.to_s
         return super unless attributes.has_key?(attr.reader)
         if attr.writer?

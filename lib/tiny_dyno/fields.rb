@@ -2,6 +2,7 @@
 require 'tiny_dyno/fields/standard'
 require 'tiny_dyno/fields/validators'
 
+require 'pry'
 module TinyDyno
 
   # This module defines behaviour for fields.
@@ -244,7 +245,6 @@ module TinyDyno
       def database_field_name(name)
         return nil unless name
         normalized = name.to_s
-        aliased_fields[normalized] || normalized
       end
 
       # Defines all the fields that are accessible on the Document
@@ -340,9 +340,9 @@ module TinyDyno
         create_accessors(name, name, options)
         create_accessors(name, aliased, options) if aliased
         process_options(field)
-        # TODO re enable
-        # create_dirty_methods(name, name)
-        # create_dirty_methods(name, aliased) if aliased
+
+        create_dirty_methods(name, name)
+        create_dirty_methods(name, aliased) if aliased
         field
       end
 
@@ -401,16 +401,17 @@ module TinyDyno
       # @param [ String ] name The name of the attribute.
       # @param [ String ] meth The name of the method.
       # @param [ Field ] field The field.
-      #
-      # @since 2.4.0
       def create_field_getter(name, meth, field)
         generated_methods.module_eval do
           re_define_method(meth) do
             raw = read_attribute(name)
+            p "raw = #{ raw }"
             if lazy_settable?(field, raw)
+              p "lazy writting: #{ raw }"
               write_attribute(name, field.eval_default(self))
             else
-              value = field.demongoize(raw)
+              p "from dyno: #{ raw }"
+              value = field.from_dyno_type(raw)
               attribute_will_change!(name) if value.resizable?
               value
             end
@@ -427,8 +428,6 @@ module TinyDyno
       #
       # @param [ String ] name The name of the attribute.
       # @param [ String ] meth The name of the method.
-      #
-      # @since 3.1.0
       def create_field_getter_before_type_cast(name, meth)
         generated_methods.module_eval do
           re_define_method("#{meth}_before_type_cast") do
@@ -449,8 +448,6 @@ module TinyDyno
       # @param [ String ] name The name of the attribute.
       # @param [ String ] meth The name of the method.
       # @param [ Field ] field The field.
-      #
-      # @since 2.4.0
       def create_field_setter(name, meth, field)
         generated_methods.module_eval do
           re_define_method("#{meth}=") do |value|
@@ -512,7 +509,7 @@ module TinyDyno
             attribute_will_change!(name)
             if value
               value.update_values do |_value|
-                field.type.mongoize(_value)
+                field.type.to_dyno_type(_value)
               end
             end
             attributes[name] = value

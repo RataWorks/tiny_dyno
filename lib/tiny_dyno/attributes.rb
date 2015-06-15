@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'active_model/attribute_methods'
-# require 'tiny_dyno/attributes/dynamic'
+require 'tiny_dyno/attributes/dynamic'
+require 'tiny_dyno/attributes/nested'
 require 'tiny_dyno/attributes/processing'
 require 'tiny_dyno/attributes/readonly'
 
@@ -95,7 +96,12 @@ module TinyDyno
       if attribute_missing?(normalized)
         raise ActiveModel::MissingAttributeError, "Missing attribute: '#{name}'."
       end
-      attributes[normalized]
+      if hash_dot_syntax?(normalized)
+        attributes.__nested__(normalized)
+      else
+        attributes[normalized]
+      end
+
     end
     alias :[] :read_attribute
 
@@ -167,6 +173,7 @@ module TinyDyno
           localized = fields[access].try(:localized?)
           attributes_before_type_cast[name.to_s] = value
           typed_value = typed_value_for(access, value)
+          binding.pry if name == 'first_name'
           unless attributes[access] == typed_value || attribute_changed?(access)
             attribute_will_change!(access)
           end
@@ -175,11 +182,30 @@ module TinyDyno
           else
             attributes[access] = typed_value
           end
+          binding.pry
           typed_value
         end
       end
     end
     alias :[]= :write_attribute
+
+    # def write_attribute(name, value)
+    #   access = database_field_name(name.to_s)
+    #   if attribute_writable?(access)
+    #     _assigning do
+    #       validate_attribute_value(access, value)
+    #       attributes_before_type_cast[name.to_s] = value
+    #       typed_value = typed_value_for(access, value)
+    #       unless attributes[access] == value || attribute_changed?(access)
+    #         attribute_will_change!(access)
+    #       end
+    #     end
+    #     attributes[access] = typed_value
+    #     typed_value
+    #     end
+    #   end
+    # end
+    # alias :[]= :write_attribute
 
     # Allows you to set all the attributes for a particular mass-assignment security role
     # by passing in a hash of attributes with keys matching the attribute names
@@ -269,7 +295,7 @@ module TinyDyno
     #
     # @since 1.0.0
     def typed_value_for(key, value)
-      fields.key?(key) ? fields[key].mongoize(value) : value.mongoize
+      fields.key?(key) ? fields[key].to_dyno_type(value) : value.to_dyno_type
     end
 
     module ClassMethods
@@ -315,7 +341,8 @@ module TinyDyno
     # @param [ String, Symbol ] name The name of the attribute to validate.
     # @param [ Object ] value The to be validated.
     #
-    # @since 3.0.10
+    # TODO, do hard validation as per
+    # http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
     def validate_attribute_value(access, value)
       return unless fields[access] && value
       validatable_types = [ Hash, Array ]
@@ -325,5 +352,20 @@ module TinyDyno
         end
       end
     end
+
+    # Does the string contain dot syntax for accessing hashes?
+    #
+    # @api private
+    #
+    # @example Is the string in dot syntax.
+    #   model.hash_dot_syntax?
+    #
+    # @return [ true, false ] If the string contains a "."
+    #
+    # @since 3.0.15
+    def hash_dot_syntax?(string)
+      string.include?(".".freeze)
+    end
+
   end
 end

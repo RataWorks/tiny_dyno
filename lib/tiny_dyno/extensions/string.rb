@@ -3,6 +3,8 @@ module TinyDyno
   module Extensions
     module String
 
+      p 'string extension succeeded'
+
       # Mongoize the string for storage.
       #
       # @example Mongoize the string.
@@ -108,6 +110,35 @@ module TinyDyno
       private
 
       module ClassMethods
+
+        # Convert the object from its DynamoDB friendly ruby type to this type.
+        #
+        # @example cast_from_dyno_type the object.
+        #   String.cast_from_dyno_type(object)
+        #
+        # @param [ Object ] object The object to demongoize.
+        #
+        # @return [ String ] The object.
+        #
+        # @since 3.0.0
+        def from_dyno_type(object)
+          object.try(:to_s)
+        end
+
+        # Turn the object from the ruby type we deal with to a DynamoDB friendly
+        # type.
+        #
+        # @example CastToDynoType the object.
+        #   String.cast_to_dyno_type("123.11")
+        #
+        # @param [ Object ] object The object to mongoize.
+        #
+        # @return [ String ] The object mongoized.
+        #
+        # @since 3.0.0
+        def to_dyno_type(object)
+          from_dyno_type(object)
+        end
 
       end
     end

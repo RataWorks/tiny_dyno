@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'tiny_dyno/changeable'
 require 'tiny_dyno/persistable'
 require 'tiny_dyno/stateful'
 
@@ -24,15 +25,20 @@ module TinyDyno
     include ActiveModel::Serializers::Xml
 
     include Attributes
+    include Changeable
     include Fields
     include Persistable
     include Stateful
+    include Threaded::Lifecycle
+
 
     MODULES = [
       Attributes,
+      Changeable,
       Fields,
       Persistable,
       Stateful,
+      Threaded::Lifecycle,
       ActiveModel::Model,
       ActiveModel::Validations
     ]

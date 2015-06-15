@@ -10,7 +10,7 @@ require 'tiny_dyno/extensions/array'
 # require "tiny_dyno/extensions/integer"
 require 'tiny_dyno/extensions/module'
 # require "tiny_dyno/extensions/nil_class"
-# require "tiny_dyno/extensions/object"
+require 'tiny_dyno/extensions/object'
 # require "tiny_dyno/extensions/object_id"
 # require "tiny_dyno/extensions/range"
 # require "tiny_dyno/extensions/regexp"

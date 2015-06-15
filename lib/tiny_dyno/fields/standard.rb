@@ -7,7 +7,10 @@ module TinyDyno
       # Set readers for the instance variables.
       attr_accessor :default_val, :label, :name, :options
 
-      delegate :demongoize, :evolve, :mongoize, to: :type
+      p "caller: #{ caller[0] }"
+      delegate :from_dyno_type, :to_dyno_type, to: :type
+
+      # insist on correct typing by the model creator
 
       # Adds the atomic changes for this type of resizable field.
       #
@@ -266,7 +269,7 @@ module TinyDyno
       #
       # @since 3.0.0
       def serialize_default(object)
-        mongoize(object)
+        to_dyno_type(object)
       end
     end
   end

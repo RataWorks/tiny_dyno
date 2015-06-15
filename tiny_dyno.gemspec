@@ -6,11 +6,11 @@ require 'tiny_dyno/version'
 Gem::Specification.new do |spec|
   spec.name          = 'tiny_dyno'
   spec.version       = TinyDyno::VERSION
-  spec.authors       = ['TODO: Write your name']
-  spec.email         = ['TODO: Write your email address']
+  spec.authors       = ['Tobias Gerschner']
+  spec.email         = ['tobias.gerschner@rataworks.com']
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = %q{Minimum Interface to Amazon DynamoDB}
+  spec.description   = %q{Minimum Interface to Amazon DynamoDB, heavily inspired by Mongoid.}
   spec.homepage      = 'TODO: Put your gem\'s website or public repo URL here.'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or

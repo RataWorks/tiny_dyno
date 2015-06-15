@@ -10,6 +10,8 @@ require 'tiny_dyno/errors'
 
 require 'tiny_dyno/document'
 
+require 'tiny_dyno/extensions'
+
 module TinyDyno
   extend Loggable
   extend self

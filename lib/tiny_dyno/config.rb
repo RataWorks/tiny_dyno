@@ -72,5 +72,18 @@ module TinyDyno
       models.push(klass) unless models.include?(klass)
     end
 
+    # Get all the models in the application - this is everything that includes
+    # Mongoid::Document.
+    #
+    # @example Get all the models.
+    #   config.models
+    #
+    # @return [ Array<Class> ] All the models in the application.
+    #
+    # @since 3.1.0
+    def models
+      @models ||= []
+    end
+
   end
 end

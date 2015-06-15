@@ -340,8 +340,9 @@ module TinyDyno
         create_accessors(name, name, options)
         create_accessors(name, aliased, options) if aliased
         process_options(field)
-        create_dirty_methods(name, name)
-        create_dirty_methods(name, aliased) if aliased
+        # TODO re enable
+        # create_dirty_methods(name, name)
+        # create_dirty_methods(name, aliased) if aliased
         field
       end
 

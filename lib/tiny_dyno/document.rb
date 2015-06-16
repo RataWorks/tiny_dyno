@@ -4,6 +4,7 @@ require 'tiny_dyno/extensions'
 require 'tiny_dyno/attributes'
 require 'tiny_dyno/fields'
 require 'tiny_dyno/stateful'
+require 'tiny_dyno/persistable'
 require 'tiny_dyno/interceptable'
 
 module TinyDyno
@@ -13,18 +14,21 @@ module TinyDyno
   module Document
     extend ActiveSupport::Concern
 
-    include ActiveModel::Model
-    include ActiveModel::ForbiddenAttributesProtection
-
     include TinyDyno::Attributes
     include TinyDyno::Fields
     include TinyDyno::Stateful
+    include TinyDyno::Persistable
     include TinyDyno::Interceptable
 
     attr_accessor :__selected_fields
     attr_reader :new_record
 
     included do
+      include ActiveModel::Model
+      include ActiveModel::ForbiddenAttributesProtection
+      include ActiveModel::Conversion
+      include ActiveModel::Dirty
+      include ActiveModel::Validations
       TinyDyno.register_model(self)
     end
 
@@ -55,8 +59,8 @@ module TinyDyno
     # Delegates to identity in order to allow two records of the same identity
     # to work with something like:
     #
-    #   [ Person.find(1), Person.find(2), Person.find(3) ] &
-    #   [ Person.find(1), Person.find(4) ] # => [ Person.find(1) ]
+    #   [ SmallPerson.find(1), SmallPerson.find(2), SmallPerson.find(3) ] &
+    #   [ SmallPerson.find(1), SmallPerson.find(4) ] # => [ SmallPerson.find(1) ]
     #
     # @example Get the hash.
     #   document.hash
@@ -72,7 +76,7 @@ module TinyDyno
     # - class and
     # - hash_key
     #
-    # Person.first.identity #=> [Person, HashKey('4f775130a04745933a000003')]
+    # SmallPerson.first.identity #=> [SmallPerson, HashKey('4f775130a04745933a000003')]
     #
     # @example Get the identity
     #   document.identity
@@ -91,7 +95,7 @@ module TinyDyno
     # The Hash Key must currently be provided from the applicationIf a HashKey is defined, the document's id will be set to that key,
     #
     # @example Create a new document.
-    #   Person.new(hash_key: hash_key, title: "Sir")
+    #   SmallPerson.new(hash_key: hash_key, title: "Sir")
     #
     # @param [ Hash ] attrs The attributes to set up the document with.
     #
@@ -175,7 +179,7 @@ module TinyDyno
     # errors, and embedded documents of the current document.
     #
     # @example Return a subclass document as a superclass instance.
-    #   manager.becomes(Person)
+    #   manager.becomes(SmallPerson)
     #
     # @raise [ ArgumentError ] If the class doesn't include TinyDyno::Document
     #
@@ -280,7 +284,7 @@ module TinyDyno
       # the attributes have already been typecast.
       #
       # @example Create the document.
-      #   Person.instantiate(:title => "Sir", :age => 30)
+      #   SmallPerson.instantiate(:title => "Sir", :age => 30)
       #
       # @param [ Hash ] attrs The hash of attributes to instantiate with.
       # @param [ Integer ] selected_fields The selected fields from the
@@ -315,7 +319,7 @@ module TinyDyno
       # Returns the logger
       #
       # @example Get the logger.
-      #   Person.logger
+      #   SmallPerson.logger
       #
       # @return [ Logger ] The configured logger or a default Logger instance.
       #

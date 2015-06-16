@@ -284,7 +284,7 @@ module TinyDyno
     # a MongoDB $set modifier.
     #
     # @example Get the setters for the atomic updates.
-    #   person = Person.new(:title => "Sir")
+    #   person = SmallPerson.new(:title => "Sir")
     #   person.title = "Madam"
     #   person.setters # returns { "title" => "Madam" }
     #

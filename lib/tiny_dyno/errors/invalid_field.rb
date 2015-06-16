@@ -32,7 +32,7 @@ module TinyDyno
       # Get the origin of the method.
       #
       # @example Get the originating class or module.
-      #   error.origin(Person, :crazy_method_name)
+      #   error.origin(SmallPerson, :crazy_method_name)
       #
       # @param [ Class ] klass The document class.
       # @param [ Symbol ] name The method name.
@@ -47,7 +47,7 @@ module TinyDyno
       # Get the location of the method.
       #
       # @example Get the location of the method on the filesystem.
-      #   error.location(Person, :crazy_method_name)
+      #   error.location(SmallPerson, :crazy_method_name)
       #
       # @param [ Class ] klass The document class.
       # @param [ Symbol ] name The method name.

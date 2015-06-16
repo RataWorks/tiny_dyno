@@ -189,7 +189,7 @@ module TinyDyno
       # Define a field attribute for the +Document+.
       #
       # @example Set the field.
-      #   Person.add_field(:name, :default => "Test")
+      #   SmallPerson.add_field(:name, :default => "Test")
       #
       # @param [ Symbol ] name The name of the field.
       # @param [ Hash ] options The hash of options.
@@ -212,7 +212,7 @@ module TinyDyno
       #   end
       #
       #   field = TinyDyno::Fields.new(:test, :custom => true)
-      #   Person.process_options(field)
+      #   SmallPerson.process_options(field)
       #   # => "called"
       #
       # @param [ Field ] field the field to process
@@ -229,7 +229,7 @@ module TinyDyno
       # Create the field accessors.
       #
       # @example Generate the accessors.
-      #   Person.create_accessors(:name, "name")
+      #   SmallPerson.create_accessors(:name, "name")
       #   person.name #=> returns the field
       #   person.name = "" #=> sets the field
       #   person.name? #=> Is the field present?
@@ -327,7 +327,7 @@ module TinyDyno
       # Include the field methods as a module, so they can be overridden.
       #
       # @example Include the fields.
-      #   Person.generated_methods
+      #   SmallPerson.generated_methods
       #
       # @return [ Module ] The module of generated methods.
       #

@@ -5,7 +5,7 @@ describe TinyDyno::Attributes do
   context 'empty document' do
 
     let(:person) do
-      Person.new
+      SmallPerson.new
     end
 
     context 'return from' do
@@ -45,7 +45,7 @@ describe TinyDyno::Attributes do
   end
   context 'getting attributes on a populated model' do
     let(:peter_parker) do
-      Person.new(first_name: 'peter', last_name: 'parker', age: 20)
+      SmallPerson.new(first_name: 'peter', last_name: 'parker', age: 20)
     end
 
     it 'does return assigned attributes that are strings' do

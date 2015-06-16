@@ -1,3 +1,5 @@
+require 'tiny_dyno/errors/invalid_field_option'
+
 # encoding: utf-8
 module TinyDyno
   module Fields
@@ -6,6 +8,8 @@ module TinyDyno
       # Defines the behaviour for defined fields in the document.
       # Set readers for the instance variables.
       attr_accessor :default_val, :label, :name, :options
+
+      delegate :from_dyno, :to_dyno, to: :type
 
       # Create the new field with a name and optional additional options.
       #
@@ -43,7 +47,6 @@ module TinyDyno
       # @since 2.1.0
       def type
         @type = options[:type]
-        raise ActiveModel::MissingAttributeError, 'You have to specify the intended field type, no guessing' if @type.nil?
       end
 
       private

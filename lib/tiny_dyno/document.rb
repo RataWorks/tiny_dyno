@@ -1,6 +1,6 @@
 require 'active_model'
 
-require 'tiny_dyno/extensions/module'
+require 'tiny_dyno/extensions'
 require 'tiny_dyno/attributes'
 require 'tiny_dyno/fields'
 require 'tiny_dyno/stateful'
@@ -220,6 +220,10 @@ module TinyDyno
       return "#{model_key}/new" if new_record?
       return "#{model_key}/#{id}-#{updated_at.utc.to_s(:nsec)}" if do_or_do_not(:updated_at)
       "#{model_key}/#{id}"
+    end
+
+    def relations
+      {}
     end
 
     private

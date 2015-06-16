@@ -13,9 +13,10 @@ class TestModel
   field :age, type: Integer
 
 end
-
-require 'pry'
-
 @tm = TestModel.new
 
-Pry.start
+require 'tracer'
+
+Tracer.on
+
+@tm.first_name

@@ -112,12 +112,13 @@ module TinyDyno
     # @since 1.0.0
     def write_attribute(name, value)
       access = database_field_name(name.to_s)
+      typed_value = typed_value_for(access, value)
       if attribute_writable?(access)
-        unless attributes[access] == value|| attribute_changed?(access)
+        unless attributes[access] == typed_value|| attribute_changed?(access)
           attribute_will_change!(access)
         end
-        attributes[access] = value
-        value
+        attributes[access] = typed_value
+        typed_value
       end
     end
     alias :[]= :write_attribute
@@ -194,6 +195,21 @@ module TinyDyno
       else
         selection.key?(name)
       end
+    end
+
+    # Return the typecasted value for a field.
+    #
+    # @example Get the value typecasted.
+    #   person.typed_value_for(:title, :sir)
+    #
+    # @param [ String, Symbol ] key The field name.
+    # @param [ Object ] value The uncast value.
+    #
+    # @return [ Object ] The cast value.
+    #
+    # @since 1.0.0
+    def typed_value_for(key, value)
+      fields.key?(key) ? fields[key].from_dyno(value) : value.to_dyno
     end
 
     # Does the string contain dot syntax for accessing hashes?

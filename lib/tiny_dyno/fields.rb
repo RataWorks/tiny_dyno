@@ -1,4 +1,7 @@
 require 'tiny_dyno/fields/standard'
+require 'tiny_dyno/fields/validators/macro'
+
+require 'pry'
 
 module TinyDyno
 
@@ -6,18 +9,21 @@ module TinyDyno
   module Fields
     extend ActiveSupport::Concern
 
-    DYNAMODB_ATTRIBUTE_TYPE_MAP = {
-        binary_blob: 'B',
-        bool: 'BOOL',
-        binary_set: 'BS',
-        list: 'L',
-        map: 'M',
-        number: 'N',
-        number_set: 'NS',
-        null: 'NULL',
-        string: 'S',
-        string_set: 'SS'
+    TYPE_MAPPINGS= {
+        # binary_blob: 'B',
+        # bool: Boolean,
+        # binary_set: Array,
+        list: Array,
+        map: Hash,
+        number: Integer,
+        number_set: Array,
+        # null: Null,
+        string: String,
+        string_set: Array,
+        time: Time,
     }
+
+    SUPPORTED_FIELD_TYPES = [Array, Hash, Integer, Array, String, Time].freeze
 
     included do
       class_attribute :fields
@@ -170,6 +176,7 @@ module TinyDyno
       # @return [ Field ] The generated field
       def field(name, options = {})
         named = name.to_s
+        Validators::Macro.validate(self, name, options)
         added = add_field(named, options)
         descendants.each do |subclass|
           subclass.add_field(named, options)
@@ -250,18 +257,38 @@ module TinyDyno
       # @param [ String ] name The name of the attribute.
       # @param [ String ] meth The name of the method.
       # @param [ Field ] field The field.
-      def create_field_getter(name, meth, value)
+      def create_field_getter(name, meth, field)
         generated_methods.module_eval do
           re_define_method(meth) do
             raw = read_attribute(name)
-            p "raw = #{ raw }"
-            p "from dyno: #{ raw }"
+            value = field.from_dyno(raw)
             attribute_will_change!(name)
             value
           end
         end
       end
 
+      # Create the getter_before_type_cast method for the provided field. If
+      # the attribute has been assigned, return the attribute before it was
+      # type cast. Otherwise, delegate to the getter.
+      #
+      # @example Create the getter_before_type_cast.
+      # Model.create_field_getter_before_type_cast("name", "name")
+      #
+      # @param [ String ] name The name of the attribute.
+      # @param [ String ] meth The name of the method.
+      #
+      def create_field_getter_before_type_cast(name, meth)
+        generated_methods.module_eval do
+          re_define_method("#{meth}_before_type_cast") do
+            if has_attribute_before_type_cast?(name)
+              read_attribute_before_type_cast(name)
+            else
+              send meth
+            end
+          end
+        end
+      end
       # Create the setter method for the provided field.
       #
       # @example Create the setter.
@@ -315,8 +342,6 @@ module TinyDyno
 
       def field_for(name, options)
         opts = options.merge(klass: self)
-        type_mapping = DYNAMODB_ATTRIBUTE_TYPE_MAP[options[:type]]
-        opts[:type] = type_mapping
         Fields::Standard.new(name, opts)
       end
 

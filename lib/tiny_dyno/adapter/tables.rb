@@ -38,18 +38,16 @@ module TinyDyno
           },
       }.merge!(create_table_request)
 
-      # I'm not so fond of fudging over the fact, that we just gloss over the fact
-      # that the table already exists ...
-      # TODO++ add a logging scope and raise a warning at least
-      begin
-        resp = connection.describe_table(table_name: table_settings[:table_name])
-      rescue Aws::DynamoDB::Errors::ResourceNotFoundException
-      ensure
-        if resp.respond_to?(:table)
-          p "Warning, table was already present : #{ table_settings[:table_name]}"
-        end
-      end
-      resp = connection.create_table(table_settings)
+      # Should or shouldn't we?
+      # begin
+      #   resp = connection.describe_table(table_name: table_settings[:table_name])
+      # rescue Aws::DynamoDB::Errors::ResourceNotFoundException
+      # ensure
+      #   if resp.respond_to?(:table)
+      #     p "Warning, table was already present : #{ table_settings[:table_name]}"
+      #   end
+      # end
+      connection.create_table(table_settings)
       if wait_on_table_status(table_status: :table_exists, table_name: table_settings[:table_name])
         update_table_cache
         return true

@@ -135,12 +135,11 @@ module TinyDyno
       end
 
       def attribute_definition_meets_spec?(definition)
-        return true
-        return definition.has_key?(:attribute_name) && \
+        return (definition.has_key?(:attribute_name) && \
         definition.has_key?(:attribute_type) && \
         definition[:attribute_name].class == String && \
         definition[:attribute_type].class == String && \
-        ['S','N', 'B'].include?(definition[:attribute_type])
+        ['S','N', 'B'].include?(definition[:attribute_type]))
       end
 
       def build_attribute_definition(name, key_type)

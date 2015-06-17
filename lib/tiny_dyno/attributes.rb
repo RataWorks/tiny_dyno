@@ -271,12 +271,12 @@ module TinyDyno
     #
     # @since 2.4.0
     def changes
-      _changes = {}
+      these_changes = {}
       changed.each do |attr|
         change = attribute_change(attr)
-        _changes[attr] = change if change
+        these_changes[attr] = change if change
       end
-      _changes
+      these_changes
     end
 
 

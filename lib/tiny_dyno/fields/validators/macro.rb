@@ -45,7 +45,7 @@ module TinyDyno
         #
         # @since 3.0.0
         def validate_name(klass, name, options)
-          [name, "#{name}?".to_sym, "#{name}=".to_sym].each do |n|
+          [name, "#{name}?".to_sym, "#{name}=".to_sym].each do
             # if TinyDyno.destructive_fields.include?(n)
             #   raise Errors::InvalidField.new(klass, n)
             # end

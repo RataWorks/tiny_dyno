@@ -4,6 +4,8 @@ shared_examples_for "tiny_dyno_document" do
   let(:validators) { described_class.new }
 
   before(:all) {
+    p "aws config:"
+    ap Aws.config
     described_class.delete_table
     described_class.create_table
   }
@@ -41,5 +43,6 @@ shared_examples_for "tiny_dyno_document" do
       expect(validators.respond_to?(:previous_changes)).to be true
       expect(validators.respond_to?(:restore_attributes)).to be true
     end
+
   end
 end

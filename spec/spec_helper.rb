@@ -18,13 +18,13 @@ end
 
 ENV['AWS_ACCESS_KEY_ID'] ||= 'foobar'
 ENV['AWS_SECRET_ACCESS_KEY'] ||= 'somedirtysecret'
+ENV['AWS_REGION'] ||= 'us-west-2'
 
 if ENV['SNAP_CI'] == 'true'
-  ENV['AWS_ENDPOINT'] = 'http://127.0.0.1:8000'
+  Aws.config[:endpoint] = 'http://127.0.0.1:8000'
 else
-  ENV['AWS_ENDPOINT'] = 'http://172.17.42.1:8000'
+  Aws.config[:endpoint] = 'http://172.17.42.1:8000'
 end
-
 
 RSpec.configure do |config|
 

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe TinyDyno::Adapter do
 
-  before(:all) { Aws.config.update({ endpoint: ENV['AWS_ENDPOINT'] })}
+  before(:all) { ap Aws.config }
 
   context 'lazy connection' do
     before(:all) { TinyDyno::Adapter.disconnect! }

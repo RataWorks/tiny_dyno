@@ -16,14 +16,13 @@ Dir.glob(File.join(ENV['PWD'],  'spec/dynamodb_available/shared/*.rb')).each do 
   require f
 end
 
-
 ENV['AWS_ACCESS_KEY_ID'] ||= 'foobar'
 ENV['AWS_SECRET_ACCESS_KEY'] ||= 'somedirtysecret'
 
 if ENV['SNAP_CI'] == 'true'
-  Aws.config.update({endpoint: 'http://127.0.0.1:8000'})
+  ENV['AWS_ENDPOINT'] = 'http://127.0.0.1:8000'
 else
-  Aws.config.update({endpoint: 'http://172.17.42.1:8000'})
+  ENV['AWS_ENDPOINT'] = 'http://172.17.42.1:8000'
 end
 
 

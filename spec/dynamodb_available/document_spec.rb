@@ -7,6 +7,8 @@ Dir.glob(File.join(ENV['PWD'], 'spec/models/*.rb')).each  { |f| require f }
 
 describe TinyDyno::Document do
 
+  before(:all) { Aws.config.update({ endpoint: ENV['AWS_ENDPOINT'] })}
+
   context '.create_table' do
 
     before(:all) do |example|

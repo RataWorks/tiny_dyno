@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe TinyDyno::Adapter do
 
+  before(:all) { Aws.config.update({ endpoint: ENV['AWS_ENDPOINT'] })}
+
   describe 'tables' do
 
     # TODO, capture this when refactoring to use shared examples with scope

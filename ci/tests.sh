@@ -9,7 +9,7 @@ setup_dynamodb_local() {
 
     if ! test -f "$HOME/$dynamodb_tar_file"
     then
-      wget --directory-prefix=$HOME -- "http://dynamodb-local.s3-website-us-west-2.amazonaws.com/${dynamodb_tar_file}"
+      wget --continue --directory-prefix=$HOME -- "http://dynamodb-local.s3-website-us-west-2.amazonaws.com/${dynamodb_tar_file}"
     fi
     mkdir -p "$dynamodb_dir"
     tar -xf $HOME/$dynamodb_tar_file -C ${dynamodb_dir}

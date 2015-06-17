@@ -15,11 +15,10 @@ module TinyDyno
     @table_names = []
 
     def connect
-      reconnect unless @connection.class == Aws::DynamoDB::Client
       connection
-      return true if @connection.class == Aws::DynamoDB::Client
-      return false
+      connected?
     end
+
     def connected?
       return true if @connection.class == Aws::DynamoDB::Client
       return false

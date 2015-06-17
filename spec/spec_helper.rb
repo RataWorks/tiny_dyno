@@ -11,6 +11,12 @@ Dir.glob(File.join(ENV['PWD'],  'spec/models/*.rb')).each do |f|
   require f
 end
 
+Dir.glob(File.join(ENV['PWD'],  'spec/dynamodb_available/shared/*.rb')).each do |f|
+  p "loading #{ f }"
+  require f
+end
+
+
 ENV['AWS_ACCESS_KEY_ID'] ||= 'foobar'
 ENV['AWS_SECRET_ACCESS_KEY'] ||= 'somedirtysecret'
 
@@ -27,9 +33,7 @@ RSpec.configure do |config|
   config.filter_run :focus
 
   dynamodb_client = Aws::DynamoDB::Client.new
-
   table_names = dynamodb_client.list_tables.table_names
-
   table_names.each do |table_name|
     dynamodb_client.delete_table(table_name: table_name)
     dynamodb_client.wait_until(:table_not_exists, table_name: table_name)

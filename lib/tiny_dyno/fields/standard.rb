@@ -1,5 +1,3 @@
-require 'tiny_dyno/errors/invalid_field_option'
-
 # encoding: utf-8
 module TinyDyno
   module Fields

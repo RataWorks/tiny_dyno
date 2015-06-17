@@ -1,8 +1,6 @@
 require 'tiny_dyno/fields/standard'
 require 'tiny_dyno/fields/validators/macro'
 
-require 'pry'
-
 module TinyDyno
 
   # This module defines behaviour for fields.

@@ -1,8 +1,11 @@
 require 'active_model'
 
+require 'tiny_dyno/errors/simple'
+
 require 'tiny_dyno/extensions'
 require 'tiny_dyno/attributes'
 require 'tiny_dyno/fields'
+require 'tiny_dyno/tables'
 require 'tiny_dyno/stateful'
 require 'tiny_dyno/persistable'
 require 'tiny_dyno/interceptable'
@@ -16,6 +19,7 @@ module TinyDyno
 
     include TinyDyno::Attributes
     include TinyDyno::Fields
+    include TinyDyno::Tables
     include TinyDyno::Stateful
     include TinyDyno::Persistable
     include TinyDyno::Interceptable
@@ -315,6 +319,7 @@ module TinyDyno
       def _types
         @_type ||= (descendants + [ self ]).uniq.map(&:to_s)
       end
+
 
       # Returns the logger
       #

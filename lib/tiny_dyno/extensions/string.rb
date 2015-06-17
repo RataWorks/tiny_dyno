@@ -100,6 +100,7 @@ module TinyDyno
           object.to_s
         end
         alias :to_dyno :from_dyno
+
       end
     end
   end

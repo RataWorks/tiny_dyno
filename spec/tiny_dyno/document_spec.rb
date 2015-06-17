@@ -14,6 +14,7 @@ describe TinyDyno::Document do
     expect(person).to_not respond_to(:_destroy)
   end
 
+
   describe ".included" do
 
     let(:models) do

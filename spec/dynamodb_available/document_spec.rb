@@ -7,6 +7,23 @@ Dir.glob(File.join(ENV['PWD'], 'spec/models/*.rb')).each  { |f| require f }
 
 describe TinyDyno::Document do
 
+  context '.create_table' do
+
+    before(:all) do |example|
+      dynamodb_client = Aws::DynamoDB::Client.new
+      table_names = dynamodb_client.list_tables.table_names
+      table_names.each do |table_name|
+        dynamodb_client.delete_table(table_name: table_name)
+        dynamodb_client.wait_until(:table_not_exists, table_name: table_name)
+      end
+    end
+
+    describe SmallPerson do
+      it_behaves_like "tiny_dyno_document"
+    end
+
+  end
+
   context '#document' do
     let(:person) { SmallPerson.new }
 
@@ -33,5 +50,4 @@ describe TinyDyno::Document do
     end
 
   end
-
 end

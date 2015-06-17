@@ -15,9 +15,9 @@ module TinyDyno
     # @return [ true ] if the table is present
 
     def table_exists?(table_name:)
-      return true if table_names.include?(table_name)
+      return true if @table_names.include?(table_name)
       update_table_cache
-      table_names.include?(table_name)
+      @table_names.include?(table_name)
     end
 
     # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#create_table-instance_method
@@ -60,19 +60,20 @@ module TinyDyno
 
     def delete_table(table_name:)
       begin
-        resp = connection.describe_table(table_name: table_name)
+        connection.describe_table(table_name: table_name)
       rescue Aws::DynamoDB::Errors::ResourceNotFoundException
         # table not there anyway
         return true
       end
       if wait_on_table_status(table_status: :table_exists, table_name: table_name)
-        resp = connection.delete_table(table_name: table_name)
+        connection.delete_table(table_name: table_name)
       else
         return false
       end
       wait_on_table_status(table_status: :table_not_exists, table_name: table_name)
       update_table_cache
-      return (table_exists?(table_name: table_name))
+      return true unless table_exists?(table_name: table_name)
+      return false
     end
 
     # Hold a cache of available table names in an instance variable

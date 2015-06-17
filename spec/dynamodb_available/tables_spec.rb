@@ -21,10 +21,7 @@ describe TinyDyno::Adapter do
 
   context 'tables' do
 
-    before(:all) {
-      p "aws config:"
-      ap Aws.config
-    }
+    before(:all) { TinyDyno::Adapter.disconnect! }
 
     it 'should add the table_name to the cache' do
       expect(TinyDyno::Adapter.create_table(valid_table_request)).to eq true

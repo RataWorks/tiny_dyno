@@ -2,10 +2,9 @@ require 'spec_helper'
 
 describe TinyDyno::Adapter do
 
-  before(:all) { ap Aws.config }
+  before(:each) { TinyDyno::Adapter.disconnect! }
 
   context 'lazy connection' do
-    before(:all) { TinyDyno::Adapter.disconnect! }
     it 'should lazily establish a connection' do
       TinyDyno::Adapter.update_table_cache
       expect(TinyDyno::Adapter.connected?).to eql true
@@ -28,7 +27,6 @@ describe TinyDyno::Adapter do
       end
 
       it 'should return false, if a connection to dynamodb does not exists' do
-        expect(TinyDyno::Adapter.connected?).to eql true
         TinyDyno::Adapter.disconnect!
         expect(TinyDyno::Adapter.connected?).to eql false
       end

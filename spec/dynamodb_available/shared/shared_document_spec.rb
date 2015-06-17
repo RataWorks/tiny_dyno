@@ -19,6 +19,10 @@ shared_examples_for "tiny_dyno_document" do
     end
   end
 
+  it "does not respond to _destroy" do
+    expect(validators).to_not respond_to(:_destroy)
+  end
+
   context '.instance methods' do
     
     it 'should have access to ActiveModel::Conversion methods' do
@@ -44,4 +48,5 @@ shared_examples_for "tiny_dyno_document" do
     end
 
   end
+
 end

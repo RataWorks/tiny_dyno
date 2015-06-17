@@ -1,3 +1,3 @@
-class MinimumModel
+class EmptyModel
   include TinyDyno::Document
 end

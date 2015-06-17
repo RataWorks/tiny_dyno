@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Minimum Interface to Amazon DynamoDB}
   spec.description   = %q{Minimum Interface to Amazon DynamoDB, heavily inspired by Mongoid.}
-  spec.homepage      = 'TODO: Put your gem\'s website or public repo URL here.'
+  spec.homepage      = 'https://github.com/rataworks/tiny_dyno'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.

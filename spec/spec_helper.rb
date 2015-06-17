@@ -31,14 +31,6 @@ RSpec.configure do |config|
 
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
-
-  dynamodb_client = Aws::DynamoDB::Client.new
-  table_names = dynamodb_client.list_tables.table_names
-  table_names.each do |table_name|
-    dynamodb_client.delete_table(table_name: table_name)
-    dynamodb_client.wait_until(:table_not_exists, table_name: table_name)
-  end
-
-  # config.order = 'random'
+  config.order = 'random'
 
 end

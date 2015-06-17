@@ -26,11 +26,10 @@ export BUNDLE_PATH="${SNAP_CACHE_DIR}/bundle-cache/tiny_ddb"
 
 export JRUBY_OPTS=" -Xcli.debug=true --debug "
 
-bundle install
+bundle install --clean
 
-bundle exec rspec spec/dynamodb_unavailable/ ; unavail_exit_status=$?
-
-test "$unavail_exit_status" -eq 0 || exit $unavail_exit_status
+#bundle exec rspec spec/dynamodb_unavailable/ ; unavail_exit_status=$?
+#test "$unavail_exit_status" -eq 0 || exit $unavail_exit_status
 
 pushd $dynamodb_dir
     java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -inMemory & dynamodb_pid=$!

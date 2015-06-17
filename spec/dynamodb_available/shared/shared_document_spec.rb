@@ -4,8 +4,7 @@ shared_examples_for "tiny_dyno_document" do
   let(:validators) { described_class.new }
 
   before(:all) {
-    p "aws config:"
-    ap Aws.config
+    TinyDyno::Adapter.disconnect!
     described_class.delete_table
     described_class.create_table
   }

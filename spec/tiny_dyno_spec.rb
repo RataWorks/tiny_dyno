@@ -8,6 +8,6 @@ describe TinyDyno do
   end
 
   it 'registers models' do
-    expect(TinyDyno.models.include?(MinimumModel)).to eql true
+    expect(TinyDyno.models.include?(SmallPerson)).to eql true
   end
 end

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe TinyDyno::Adapter do
 
-
+  before(:all) { TinyDyno::Adapter.disconnect! }
   let(:valid_table_request) {{
         attribute_definitions: [
             {

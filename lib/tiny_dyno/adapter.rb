@@ -11,7 +11,6 @@ module TinyDyno
 
     attr_reader :table_names
 
-    @connection = Aws::DynamoDB::Client.new
     @table_names = []
 
     def connect
@@ -39,7 +38,7 @@ module TinyDyno
 
     def connection
       unless @connection
-        p 'setting up new connection ... '
+        TinyDyno.logger.info 'setting up new connection ... ' if TinyDyno.logger
         @connection =  Aws::DynamoDB::Client.new
         update_table_cache
       end

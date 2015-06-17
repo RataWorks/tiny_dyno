@@ -29,6 +29,7 @@ module TinyDyno
 
     included do
       include ActiveModel::Model
+      include ActiveModel::AttributeMethods
       include ActiveModel::ForbiddenAttributesProtection
       include ActiveModel::Conversion
       include ActiveModel::Dirty
@@ -36,61 +37,61 @@ module TinyDyno
       TinyDyno.register_model(self)
     end
 
-    # Freezes the internal attributes of the document.
+    # # Freezes the internal attributes of the document.
+    # #
+    # # @example Freeze the document
+    # #   document.freeze
+    # #
+    # # @return [ Document ] The document.
+    # #
+    # # @since 2.0.0
+    # def freeze
+    #   as_document.freeze and self
+    # end
     #
-    # @example Freeze the document
-    #   document.freeze
-    #
-    # @return [ Document ] The document.
-    #
-    # @since 2.0.0
-    def freeze
-      as_document.freeze and self
-    end
+    # # Checks if the document is frozen
+    # #
+    # # @example Check if frozen
+    # #   document.frozen?
+    # #
+    # # @return [ true, false ] True if frozen, else false.
+    # #
+    # # @since 2.0.0
+    # def frozen?
+    #   attributes.frozen?
+    # end
 
-    # Checks if the document is frozen
-    #
-    # @example Check if frozen
-    #   document.frozen?
-    #
-    # @return [ true, false ] True if frozen, else false.
-    #
-    # @since 2.0.0
-    def frozen?
-      attributes.frozen?
-    end
-
-    # Delegates to identity in order to allow two records of the same identity
-    # to work with something like:
-    #
-    #   [ SmallPerson.find(1), SmallPerson.find(2), SmallPerson.find(3) ] &
-    #   [ SmallPerson.find(1), SmallPerson.find(4) ] # => [ SmallPerson.find(1) ]
-    #
-    # @example Get the hash.
-    #   document.hash
-    #
-    # @return [ Integer ] The hash of the document's identity.
-    #
-    # @since 1.0.0
-    def hash
-      identity.hash
-    end
-
-    # A Document's is identified absolutely by its
-    # - class and
-    # - hash_key
-    #
-    # SmallPerson.first.identity #=> [SmallPerson, HashKey('4f775130a04745933a000003')]
-    #
-    # @example Get the identity
-    #   document.identity
-    #
-    # @return [ Array ] An array containing [document.class, document._id]
-    #
-    # @since 3.0.0
-    def identity
-      [ self.class, self._id ]
-    end
+    # # Delegates to identity in order to allow two records of the same identity
+    # # to work with something like:
+    # #
+    # #   [ SmallPerson.find(1), SmallPerson.find(2), SmallPerson.find(3) ] &
+    # #   [ SmallPerson.find(1), SmallPerson.find(4) ] # => [ SmallPerson.find(1) ]
+    # #
+    # # @example Get the hash.
+    # #   document.hash
+    # #
+    # # @return [ Integer ] The hash of the document's identity.
+    # #
+    # # @since 1.0.0
+    # def hash
+    #   identity.hash
+    # end
+    # #
+    # # A Document's is identified absolutely by its
+    # # - class and
+    # # - hash_key
+    # #
+    # # SmallPerson.first.identity #=> [SmallPerson, HashKey('4f775130a04745933a000003')]
+    # #
+    # # @example Get the identity
+    # #   document.identity
+    # #
+    # # @return [ Array ] An array containing [document.class, document._id]
+    # #
+    # # @since 3.0.0
+    # def identity
+    #   [ self.class, self._id ]
+    # end
 
     # Instantiate a new +Document+, setting the Document's attributes if
     # given. If no attributes are provided, they will be initialized with
@@ -128,29 +129,29 @@ module TinyDyno
       self.class.model_name
     end
 
-    # Return the key value for the document.
-    #
-    # @example Return the key.
-    #   document.to_key
-    #
-    # @return [ String ] The id of the document or nil if new.
-    #
-    # @since 2.4.0
-    def to_key
-      (persisted? || destroyed?) ? [ id.to_s ] : nil
-    end
+    # # Return the key value for the document.
+    # #
+    # # @example Return the key.
+    # #   document.to_key
+    # #
+    # # @return [ String ] The id of the document or nil if new.
+    # #
+    # # @since 2.4.0
+    # def to_key
+    #   (persisted? || destroyed?) ? [ id.to_s ] : nil
+    # end
 
-    # Return an array with this +Document+ only in it.
-    #
-    # @example Return the document in an array.
-    #   document.to_a
-    #
-    # @return [ Array<Document> ] An array with the document as its only item.
-    #
-    # @since 1.0.0
-    def to_a
-      [ self ]
-    end
+    # # Return an array with this +Document+ only in it.
+    # #
+    # # @example Return the document in an array.
+    # #   document.to_a
+    # #
+    # # @return [ Array<Document> ] An array with the document as its only item.
+    # #
+    # # @since 1.0.0
+    # def to_a
+    #   [ self ]
+    # end
 
     # # Return a hash of the entire document hierarchy from this document and
     # # below. Used when the attributes are needed for everything and not just
@@ -308,17 +309,17 @@ module TinyDyno
         doc
       end
 
-      # Returns all types to query for when using this class as the base.
-      #
-      # @example Get the types.
-      #   document._types
-      #
-      # @return [ Array<Class> ] All subclasses of the current document.
-      #
-      # @since 1.0.0
-      def _types
-        @_type ||= (descendants + [ self ]).uniq.map(&:to_s)
-      end
+      # # Returns all types to query for when using this class as the base.
+      # #
+      # # @example Get the types.
+      # #   document._types
+      # #
+      # # @return [ Array<Class> ] All subclasses of the current document.
+      # #
+      # # @since 1.0.0
+      # def _types
+      #   @_type ||= (descendants + [ self ]).uniq.map(&:to_s)
+      # end
 
 
       # Returns the logger

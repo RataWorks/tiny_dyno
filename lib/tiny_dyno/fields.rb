@@ -154,7 +154,7 @@ module TinyDyno
       # @since 3.0.7
       def database_field_name(name)
         return nil unless name
-        name.to_s
+        normalized = name.to_s
       end
 
       # Defines all the fields that are accessible on the Document
@@ -197,7 +197,7 @@ module TinyDyno
         create_accessors(name, name, options)
         process_options(field)
 
-        create_dirty_methods(name, name)
+        # create_dirty_methods(name, name)
         field
       end
 
@@ -240,9 +240,11 @@ module TinyDyno
       # @since 2.0.0
       def create_accessors(name, meth, options = {})
         field = fields[name]
+
         create_field_getter(name, meth, field)
         create_field_setter(name, meth, field)
         create_field_check(name, meth)
+
       end
 
       # Create the getter method for the provided field.
@@ -296,7 +298,8 @@ module TinyDyno
       def create_field_setter(name, meth, field)
         generated_methods.module_eval do
           re_define_method("#{meth}=") do |value|
-            write_attribute(name, value)
+            val = write_attribute(name, value)
+            val
           end
         end
       end

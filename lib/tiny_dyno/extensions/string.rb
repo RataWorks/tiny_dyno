@@ -96,8 +96,7 @@ module TinyDyno
         # @return [ String ] The object.
         def from_dyno(object)
           return object if object.nil?
-          return nil if object.blank?
-          object.to_s
+          object.to_s if object.class == String
         end
         alias :to_dyno :from_dyno
 

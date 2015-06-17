@@ -5,14 +5,14 @@ set -x
 setup_dynamodb_local() {
 
     dynamodb_tar_file="dynamodb_local_2015-04-27_1.0.tar.gz"
-    dynamodb_dir=$dynamodb_dir
+    dynamodb_dir=$HOME/dynamodb_local
 
     if ! test -f "$HOME/$dynamodb_tar_file"
     then
       wget --directory-prefix=$HOME -- "http://dynamodb-local.s3-website-us-west-2.amazonaws.com/${dynamodb_tar_file}"
     fi
     mkdir -p "$dynamodb_dir"
-    tar -xf $HOME/$dynamodb_tar_file -C ${HOME}/${dynamodb_tar_file}
+    tar -xf $HOME/$dynamodb_tar_file -C ${HOME}/${dynamodb_dir}
 
 }
 

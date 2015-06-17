@@ -12,7 +12,7 @@ setup_dynamodb_local() {
       wget --directory-prefix=$HOME -- "http://dynamodb-local.s3-website-us-west-2.amazonaws.com/${dynamodb_tar_file}"
     fi
     mkdir -p "$dynamodb_dir"
-    tar -xf $HOME/$dynamodb_tar_file -C ${HOME}/${dynamodb_dir}
+    tar -xf $HOME/$dynamodb_tar_file -C ${dynamodb_dir}
 
 }
 
@@ -43,7 +43,7 @@ if test "$dynamodb_local" -eq 0
 then
     echo "DynamoDB_Local is up, all tests should pass"
 else
-    echo "DynamoDB_Local setup failed, persistence tests will fail"
+    echo "DynamoDB_Local setup failed, persistence tests will fail" 1>&2
 fi
 
 bundle exec rspec spec/dynamodb_available/ ; avail_exit_status=$?

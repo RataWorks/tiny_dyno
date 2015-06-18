@@ -6,10 +6,9 @@ describe "TinyDyno::Adapter is available" do
 
   # TODO, it works, but we don't have a non consequential trigger method available to test this
   #
-  # it 'should lazily establish a connection' do
-  #   expect(TinyDyno::Adapter.connected?).to eql true
-  # end
-  #
+  it 'should lazily establish a connection' do
+    expect(TinyDyno::Adapter.connected?).to eql true
+  end
 
   describe 'connect' do
     it 'should connect to DynamoDB' do

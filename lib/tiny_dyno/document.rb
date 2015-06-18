@@ -70,33 +70,6 @@ module TinyDyno
       self.class.model_name
     end
 
-    # # Return a hash of the entire document hierarchy from this document and
-    # # below. Used when the attributes are needed for everything and not just
-    # # the current document.
-    # #
-    # # @example Get the full hierarchy.
-    # #   person.as_document
-    # #
-    # # @return [ Hash ] A hash of all attributes in the hierarchy.
-    # #
-    # # @since 1.0.0
-    # def as_document
-    #   return attributes if frozen?
-    #   embedded_relations.each_pair do |name, meta|
-    #     without_autobuild do
-    #       relation, stored = send(name), meta.store_as
-    #       if attributes.key?(stored) || !relation.blank?
-    #         if relation
-    #           attributes[stored] = relation.as_document
-    #         else
-    #           attributes.delete(stored)
-    #         end
-    #       end
-    #     end
-    #   end
-    #   attributes
-    # end
-
     # Returns an instance of the specified class with the attributes,
     # errors, and embedded documents of the current document.
     #

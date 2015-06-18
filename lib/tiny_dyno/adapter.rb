@@ -19,6 +19,11 @@ module TinyDyno
     end
 
     def connected?
+      begin
+        connection.list_tables(limit: 1)
+      rescue Errno::ECONNREFUSED, Aws::DynamoDB::Errors::UnrecognizedClientException => e
+        return false
+      end
       return true if @connection.class == Aws::DynamoDB::Client
       return false
     end
@@ -30,6 +35,7 @@ module TinyDyno
     def update_item(update_item_request)
       false
     end
+
     def put_item(put_item_request:)
       false
     end

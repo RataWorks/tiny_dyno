@@ -77,7 +77,9 @@ module TinyDyno
     # Hold a cache of available table names in an instance variable
     #
     def update_table_cache
-      @table_names = connection.list_tables.table_names
+      return unless connected?
+      new_table_names = connection.list_tables.table_names
+      @table_names = new_table_names
     end
 
     private
@@ -96,7 +98,6 @@ module TinyDyno
       end
       return true
     end
-
 
   end
 end

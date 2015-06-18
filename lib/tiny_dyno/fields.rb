@@ -196,7 +196,6 @@ module TinyDyno
         fields[name] = field
         create_accessors(name, name, options)
         process_options(field)
-
         # create_dirty_methods(name, name)
         field
       end
@@ -259,8 +258,8 @@ module TinyDyno
         generated_methods.module_eval do
           re_define_method(meth) do
             raw = read_attribute(name)
-            value = field.from_dyno(raw)
-            attribute_will_change!(name)
+            value = typed_value_for(name, raw)
+            attribute_will_change!(value)
             value
           end
         end
@@ -298,6 +297,8 @@ module TinyDyno
       def create_field_setter(name, meth, field)
         generated_methods.module_eval do
           re_define_method("#{meth}=") do |value|
+            p "caller for write_attribute "
+            p caller.inspect
             val = write_attribute(name, value)
             val
           end

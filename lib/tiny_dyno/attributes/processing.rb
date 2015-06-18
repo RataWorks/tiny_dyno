@@ -19,7 +19,6 @@ module TinyDyno
       def process_attributes(attrs = nil)
         attrs ||= {}
         if !attrs.empty?
-          attrs = sanitize_for_mass_assignment(attrs)
           attrs.each_pair do |key, value|
             next if pending_attribute?(key, value)
             process_attribute(key, value)
@@ -50,6 +49,7 @@ module TinyDyno
           pending_relations[name] = value
           return true
         end
+        return false
       end
 
       # Get all the pending relations that need to be set.

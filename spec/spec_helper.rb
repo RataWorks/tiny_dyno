@@ -11,7 +11,7 @@ Dir.glob(File.join(ENV['PWD'],  'spec/models/*.rb')).each do |f|
   require f
 end
 
-Dir.glob(File.join(ENV['PWD'],  'spec/dynamodb_available/shared/*.rb')).each do |f|
+Dir.glob(File.join(ENV['PWD'],  'spec/tiny_dyno/shared/*.rb')).each do |f|
   p "loading #{ f }"
   require f
 end
@@ -31,4 +31,5 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
   config.order = 'random'
+
 end

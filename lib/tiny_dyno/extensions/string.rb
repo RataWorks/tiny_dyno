@@ -82,25 +82,10 @@ module TinyDyno
         end_with?("_before_type_cast")
       end
 
-      private
-
       module ClassMethods
 
-        # Convert an object to a string
-        #
-        # @example from_dyno the object.
-        #   String.from_dyno(object)
-        #
-        # @param [ Object ] object The object to demongoize.
-        #
-        # @return [ String ] The object.
-        def from_dyno(object)
-          return object if object.nil?
-          object.to_s if object.class == String
-        end
-        alias :to_dyno :from_dyno
-
       end
+
     end
   end
 end

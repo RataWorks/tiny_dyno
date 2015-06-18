@@ -29,24 +29,8 @@ module TinyDyno
 
       module ClassMethods
 
-        # Turn the object from the ruby type we deal with to a Mongo friendly
-        # type.
-        #
-        # @example Mongoize the object.
-        #   BigDecimal.mongoize("123.11")
-        #
-        # @return [ String ] The object mongoized.
-        #
-        # @since 3.0.0
-        def from_dyno(object)
-          unless object.blank?
-            object.to_i rescue 0
-          else
-            nil
-          end
-        end
-        alias :to_dyno :from_dyno
       end
+
     end
   end
 end

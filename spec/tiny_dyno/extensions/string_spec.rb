@@ -88,47 +88,47 @@ describe TinyDyno::Extensions::String do
   #     end
   #   end
   # end
-
-  describe ".from_dyno" do
-
-    context "when the object is not a string" do
-
-      it "returns the string" do
-        expect(String.from_dyno(:test)).to eq("test")
-      end
-    end
-
-    context "when the object is nil" do
-
-      it "returns nil" do
-        expect(String.from_dyno(nil)).to be_nil
-      end
-    end
-  end
-
-  describe ".to_dyno" do
-
-    context "when the object is not a string" do
-
-      it "returns the string" do
-        expect(String.to_dyno(:test)).to eq("test")
-      end
-    end
-
-    context "when the object is nil" do
-
-      it "returns nil" do
-        expect(String.to_dyno(nil)).to be_nil
-      end
-    end
-  end
-
-  describe "#mongoize" do
-
-    it "returns self" do
-      expect("test".to_dyno).to eq("test")
-    end
-  end
+  #
+  # describe ".from_dyno" do
+  #
+  #   context "when the object is not a string" do
+  #
+  #     it "returns the string" do
+  #       expect(String.from_dyno(:test)).to eq("test")
+  #     end
+  #   end
+  #
+  #   context "when the object is nil" do
+  #
+  #     it "returns nil" do
+  #       expect(String.from_dyno(nil)).to be_nil
+  #     end
+  #   end
+  # end
+  #
+  # describe ".to_dyno" do
+  #
+  #   context "when the object is not a string" do
+  #
+  #     it "returns the string" do
+  #       expect(String.to_dyno(:test)).to eq("test")
+  #     end
+  #   end
+  #
+  #   context "when the object is nil" do
+  #
+  #     it "returns nil" do
+  #       expect(String.to_dyno(nil)).to be_nil
+  #     end
+  #   end
+  # end
+  #
+  # describe "#to_dyno" do
+  #
+  #   it "returns self" do
+  #     expect("test".to_dyno).to eq("test")
+  #   end
+  # end
 
   describe "#reader" do
 

@@ -7,8 +7,6 @@ module TinyDyno
       # Set readers for the instance variables.
       attr_accessor :default_val, :label, :name, :options
 
-      delegate :from_dyno, :to_dyno, to: :type
-
       # Create the new field with a name and optional additional options.
       #
       # @example Create the new field.

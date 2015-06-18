@@ -1,4 +1,5 @@
 require 'active_model'
+require 'tiny_dyno/extensions'
 require 'aws-sdk'
 
 require 'tiny_dyno/version'
@@ -6,7 +7,6 @@ require 'tiny_dyno/errors/tiny_dyno_error'
 
 require 'tiny_dyno/loggable'
 require 'tiny_dyno/document'
-
 require 'tiny_dyno/adapter'
 
 module TinyDyno

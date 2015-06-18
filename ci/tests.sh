@@ -45,7 +45,7 @@ else
     echo "DynamoDB_Local setup failed, persistence tests will fail" 1>&2
 fi
 
-bundle exec rspec spec/dynamodb_available/ ; avail_exit_status=$?
+bundle exec rspec spec/tiny_dyno ; avail_exit_status=$?
 
 test "$SNAP_CI" == "true" && test -n "$dynamodb_pid" && kill -15 $dynamodb_pid
 

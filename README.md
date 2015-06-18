@@ -13,8 +13,9 @@ Beyond that, TinyDyno is a <working>, no frills abstraction to work with DynamoD
 
 If you're new to DynamoDB, it is highly recommended to read the following:
 
-http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStartedDynamoDB.html
-http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GuidelinesForTables.html
+[GettingStartedDynamoDB](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStartedDynamoDB.html)
+
+[GuidelinesForTables](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GuidelinesForTables.html)
 
 
 Supported Operations

@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe TinyDyno::Persistable do
-
+describe Person do
+  it_behaves_like "it is persistable"
 end

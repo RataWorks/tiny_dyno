@@ -1,17 +1,12 @@
-require 'pry'
 
 module TinyDyno
   module Tables
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :table_name, :attribute_definitions, :key_schema, :provisioned_throughput
-      # TODO :local_secondary_indexes, :global_secondary_indexes
+      class_attribute :table_name, :provisioned_throughput
 
       self.table_name = self.name.to_s.downcase
-      self.attribute_definitions = []
-      self.key_schema = []
-
       self.provisioned_throughput ||= {
           read_capacity_units: 100,
           write_capacity_units: 100,
@@ -58,39 +53,12 @@ module TinyDyno
         end
       end
 
-      # Defines all the fields that are accessible on the Document
-      # For each field that is defined, a getter and setter will be
-      # added as an instance method to the Document.
-      #
-      # @example Define a field.
-      #   field :score, :type => Integer, :default => 0
-      #
-      # @param [ Symbol ] name The name of the field.
-      # @param [ Hash ] options The options to pass to the field.
-      #
-      # @option options [ Class ] :type The type of the field.
-      # @option options [ String ] :label The label for the field.
-      # @option options [ Object, Proc ] :default The field's default
-      #
-      # @return [ Field ] The generated field
-      def hash_key(name, options = {})
-        named = name.to_s
-        attribute_definition = build_attribute_definition(named,options[:type])
-        key_schema = build_key_schema(named)
-        unless attribute_definition_meets_spec?(attribute_definition)
-          raise InvalidHashKeyDefinitionError, "#{ name } on #{ self.name }"
-        end
-        self.attribute_definitions << attribute_definition
-        self.key_schema << key_schema
-      end
-
       # Send the actual table creation to the DynamoDB API
       # @example Create the table for the class
       #   Person.create_table
       # @return [ true ] If the operation succeeded
-
       def create_table
-        raise InvalidTableDefinitionError, "#{ self.name } has invalid table configuration" unless model_table_config_is_valid?
+        raise InvalidTableDefinition.new "#{ self.name } has invalid table configuration" unless model_table_config_is_valid?
         TinyDyno::Adapter.create_table(create_table_request)
       end
 
@@ -109,6 +77,10 @@ module TinyDyno
       #
       # @return [ String ] The name of the table
 
+      def model_table_config_is_valid?
+        return (attribute_definitions_meet_spec? and not self.table_name.nil?)
+      end
+
       private
 
       # build create_table_request, as expected by aws-sdk v2 #create_table
@@ -121,47 +93,6 @@ module TinyDyno
             provisioned_throughput: self.provisioned_throughput
         }
       end
-
-      def model_table_config_is_valid?
-        return (attribute_definitions_meet_spec? and not self.table_name.nil?)
-      end
-      # Return true or false, depending on whether the attribute_definitions on the model
-      # meet the specification of the Aws Sdk
-      # This is a syntax, not a logic check
-      def attribute_definitions_meet_spec?
-        attribute_definitions.each do |definition|
-          return false unless attribute_definition_meets_spec?(definition)
-        end
-      end
-
-      def attribute_definition_meets_spec?(definition)
-        return (definition.has_key?(:attribute_name) && \
-        definition.has_key?(:attribute_type) && \
-        definition[:attribute_name].class == String && \
-        definition[:attribute_type].class == String && \
-        ['S','N', 'B'].include?(definition[:attribute_type]))
-      end
-
-      def build_attribute_definition(name, key_type)
-        {
-            attribute_name: name,
-            attribute_type: hash_key_type(key_type)
-        }
-      end
-
-      def hash_key_type(key_type = nil)
-        return 'S' if key_type == String
-        return 'N' if key_type == Fixnum or key_type == Integer
-        return nil
-      end
-
-      def build_key_schema(name)
-        {
-            attribute_name: name,
-            key_type: 'HASH'
-        }
-      end
-
     end
   end
 end

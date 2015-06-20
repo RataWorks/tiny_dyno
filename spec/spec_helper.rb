@@ -1,24 +1,22 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
+require 'fabrication'
+require 'faker'
+
 require 'simplecov'
 SimpleCov.coverage_dir 'coverage/rspec'
 
 require 'tiny_dyno'
-require 'awesome_print'
 
 Dir.glob(File.join(ENV['PWD'],  'spec/models/*.rb')).each do |f|
   p "loading #{ f }"
   require f
 end
 
-Dir.glob(File.join(ENV['PWD'],  'spec/tiny_dyno/shared/*.rb')).each do |f|
+Dir.glob(File.join(ENV['PWD'],  'spec/shared/*.rb')).each do |f|
   p "loading #{ f }"
   require f
 end
-
-ENV['AWS_ACCESS_KEY_ID'] ||= 'foobar'
-ENV['AWS_SECRET_ACCESS_KEY'] ||= 'somedirtysecret'
-ENV['AWS_REGION'] ||= 'us-west-2'
 
 if ENV['SNAP_CI'] == 'true'
   Aws.config[:endpoint] = 'http://127.0.0.1:8000'
@@ -33,3 +31,4 @@ RSpec.configure do |config|
   config.order = 'random'
 
 end
+

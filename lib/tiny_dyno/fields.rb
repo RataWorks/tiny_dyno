@@ -1,9 +1,6 @@
 require 'tiny_dyno/fields/standard'
-require 'tiny_dyno/fields/validators/macro'
 
 module TinyDyno
-
-  # This module defines behaviour for fields.
   module Fields
     extend ActiveSupport::Concern
 
@@ -30,63 +27,6 @@ module TinyDyno
 
     end
 
-    # Returns an array of names for the attributes available on this object.
-    #
-    # Provides the field names in an ORM-agnostic way. Rails v3.1+ uses this
-    # method to automatically wrap params in JSON requests.
-    #
-    # @example Get the field names
-    #   docment.attribute_names
-    #
-    # @return [ Array<String> ] The field names
-    #
-    # @since 3.0.0
-    def attribute_names
-      self.class.attribute_names
-    end
-
-    # Get the name of the provided field as it is stored in the database.
-    # Used in determining if the field is aliased or not.
-    #
-    # @example Get the database field name.
-    #   model.database_field_name(:authorization)
-    #
-    # @param [ String, Symbol ] name The name to get.
-    #
-    # @return [ String ] The name of the field as it's stored in the db.
-    #
-    # @since 3.0.7
-    def database_field_name(name)
-      self.class.database_field_name(name)
-    end
-
-    # Is the provided field a lazy evaluation?
-    #
-    # @example If the field is lazy settable.
-    #   doc.lazy_settable?(field, nil)
-    #
-    # @param [ Field ] field The field.
-    # @param [ Object ] value The current value.
-    #
-    # @return [ true, false ] If we set the field lazily.
-    #
-    # @since 3.1.0
-    def lazy_settable?(field, value)
-      !frozen? && value.nil? && field.lazy?
-    end
-
-    # Is the document using object ids?
-    #
-    # @note Refactored from using delegate for class load performance.
-    #
-    # @example Is the document using object ids?
-    #   model.using_object_ids?
-    #
-    # @return [ true, false ] Using object ids.
-    def using_object_ids?
-      self.class.using_object_ids?
-    end
-
     class << self
 
       # Stores the provided block to be run when the option name specified is
@@ -106,6 +46,7 @@ module TinyDyno
       #   provided.
       #
       # @since 2.1.0
+
       def option(option_name, &block)
         options[option_name] = block
       end
@@ -122,6 +63,21 @@ module TinyDyno
       def options
         @options ||= {}
       end
+    end
+
+    # Get the name of the provided field as it is stored in the database.
+    # Used in determining if the field is aliased or not.
+    #
+    # @example Get the database field name.
+    #   model.database_field_name(:authorization)
+    #
+    # @param [ String, Symbol ] name The name to get.
+    #
+    # @return [ String ] The name of the field as it's stored in the db.
+    #
+    # @since 3.0.7
+    def database_field_name(name)
+      self.class.database_field_name(name)
     end
 
     module ClassMethods
@@ -174,11 +130,7 @@ module TinyDyno
       # @return [ Field ] The generated field
       def field(name, options = {})
         named = name.to_s
-        Validators::Macro.validate(self, name, options)
         added = add_field(named, options)
-        descendants.each do |subclass|
-          subclass.add_field(named, options)
-        end
         added
       end
 
@@ -187,7 +139,7 @@ module TinyDyno
       # Define a field attribute for the +Document+.
       #
       # @example Set the field.
-      #   SmallPerson.add_field(:name, :default => "Test")
+      #   Person.add_field(:name, :default => "Test")
       #
       # @param [ Symbol ] name The name of the field.
       # @param [ Hash ] options The hash of options.
@@ -196,7 +148,6 @@ module TinyDyno
         fields[name] = field
         create_accessors(name, name, options)
         process_options(field)
-        # create_dirty_methods(name, name)
         field
       end
 
@@ -209,7 +160,7 @@ module TinyDyno
       #   end
       #
       #   field = TinyDyno::Fields.new(:test, :custom => true)
-      #   SmallPerson.process_options(field)
+      #   Person.process_options(field)
       #   # => "called"
       #
       # @param [ Field ] field the field to process
@@ -223,10 +174,15 @@ module TinyDyno
         end
       end
 
+      def field_for(name, options)
+        opts = options.merge(klass: self)
+        Fields::Standard.new(name, opts)
+      end
+
       # Create the field accessors.
       #
       # @example Generate the accessors.
-      #   SmallPerson.create_accessors(:name, "name")
+      #   Person.create_accessors(:name, "name")
       #   person.name #=> returns the field
       #   person.name = "" #=> sets the field
       #   person.name? #=> Is the field present?
@@ -297,8 +253,6 @@ module TinyDyno
       def create_field_setter(name, meth, field)
         generated_methods.module_eval do
           re_define_method("#{meth}=") do |value|
-            p "caller for write_attribute "
-            p caller.inspect
             val = write_attribute(name, value)
             val
           end
@@ -326,7 +280,7 @@ module TinyDyno
       # Include the field methods as a module, so they can be overridden.
       #
       # @example Include the fields.
-      #   SmallPerson.generated_methods
+      #   Person.generated_methods
       #
       # @return [ Module ] The module of generated methods.
       #
@@ -339,11 +293,7 @@ module TinyDyno
         end
       end
 
-      def field_for(name, options)
-        opts = options.merge(klass: self)
-        Fields::Standard.new(name, opts)
-      end
-
     end
+
   end
 end

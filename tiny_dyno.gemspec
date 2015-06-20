@@ -34,6 +34,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'guard-rspec'
+  spec.add_development_dependency 'fabrication'
+  spec.add_development_dependency 'faker'
 
   spec.add_dependency 'aws-sdk', '~> 2.1'
   spec.add_dependency 'activemodel', '~> 4.2'

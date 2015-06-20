@@ -24,26 +24,20 @@ module TinyDyno
         @options = options
         @label = options[:label]
         @default_val = options[:default]
-
-        # @todo: Durran, change API in 4.0 to take the class as a parameter.
-        # This is here temporarily to address #2529 without changing the
-        # constructor signature.
-        if default_val.respond_to?(:call)
-          define_default_method(options[:klass])
-        end
-      end
-
-      # Get the type of this field - inferred from the class name.
-      #
-      # @example Get the type.
-      #   field.type
-      #
-      # @return [ Class ] The name of the class.
-      #
-      # @since 2.1.0
-      def type
         @type = options[:type]
       end
+
+      # # Get the type of this field - inferred from the class name.
+      # #
+      # # @example Get the type.
+      # #   field.type
+      # #
+      # # @return [ Class ] The name of the class.
+      # #
+      # # @since 2.1.0
+      # def type
+      #   @type = options[:type]
+      # end
 
       private
 

@@ -1,13 +1,20 @@
 require 'active_model'
-require 'tiny_dyno/extensions'
 require 'aws-sdk'
 
-require 'tiny_dyno/version'
-require 'tiny_dyno/errors/tiny_dyno_error'
+if ENV['RACK_ENV'] == 'development'
+require 'pry'
+require 'awesome_print'
+end
 
+require 'tiny_dyno/extensions'
+
+require 'tiny_dyno/version'
 require 'tiny_dyno/loggable'
+require 'tiny_dyno/errors'
 require 'tiny_dyno/document'
 require 'tiny_dyno/adapter'
+
+I18n.load_path << File.join(File.dirname(__FILE__), "config", "locales", "en.yml")
 
 module TinyDyno
   extend Loggable

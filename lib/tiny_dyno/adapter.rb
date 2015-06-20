@@ -1,6 +1,7 @@
 require 'aws-sdk'
 
 require 'tiny_dyno/adapter/tables'
+require 'tiny_dyno/adapter/items'
 
 module TinyDyno
 
@@ -30,14 +31,6 @@ module TinyDyno
 
     def disconnect!
       @connection = nil
-    end
-
-    def update_item(update_item_request)
-      false
-    end
-
-    def put_item(put_item_request:)
-      false
     end
 
     protected

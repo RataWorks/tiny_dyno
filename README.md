@@ -17,7 +17,6 @@ If you're new to DynamoDB, it is highly recommended to read the following:
 
 [GuidelinesForTables](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GuidelinesForTables.html)
 
-
 Supported Operations
 --------------------
 
@@ -58,6 +57,10 @@ supported_keys;
 * key
 * attribute_updates
 
+delete_item
+------------
+
+* hash_key
 
 Installation
 ============
@@ -78,9 +81,35 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+
+require 'tiny_dyno'
+class Person
+  include TinyDyno::Document
+
+  hash_key :id, type: Integer
+
+  field :first_name, type: String
+  field :last_name, type: String
+  field :age, type: Integer
+
+end
+
+require 'fabrication'
+
+Fabricator(:person) do
+  id { Faker::Number.number(10) }
+  first_name { Faker::Name.first_name }
+  last_name { Faker::Name.last_name }
+  age { Faker::Number.number(2) }
+end
+
+person = Fabricate(:person)
+
+```
 
 ## Development
+
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `bundle exec rspec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 

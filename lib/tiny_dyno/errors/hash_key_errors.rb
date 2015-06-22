@@ -17,7 +17,7 @@ module TinyDyno
       # @since 3.0.0
       def initialize(klass:, name:)
         super(
-            compose_message("invalid hash_key", { klass: klass.name, name: name })
+            compose_message("invalid_hash_key", { klass: klass.name, name: name })
         )
       end
     end

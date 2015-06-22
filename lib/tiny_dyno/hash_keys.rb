@@ -61,7 +61,7 @@ module TinyDyno
         attribute_definition = build_attribute_definition(named,options[:type])
         key_schema = build_key_schema(named)
         unless attribute_definition_meets_spec?(attribute_definition)
-          raise InvalidHashKey.new(self.class, name)
+          raise TinyDyno::Errors::InvalidHashKey.new(klass: self.class, name: name)
         end
         # we need the accessors as well
         add_field(named, options)

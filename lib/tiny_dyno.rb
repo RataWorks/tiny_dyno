@@ -1,10 +1,10 @@
 require 'active_model'
 require 'aws-sdk'
 
-if ENV['RACK_ENV'] == 'development'
-require 'pry'
-require 'awesome_print'
-end
+# if ENV['RACK_ENV'] == 'development'
+# require 'pry'
+# require 'awesome_print'
+# end
 
 require 'tiny_dyno/extensions'
 

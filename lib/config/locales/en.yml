@@ -43,6 +43,11 @@ en:
             allowed, and don't use these names. These include names that also
             conflict with core Ruby methods on Object, Module, Enumerable, or
             included gems that inject methods into these or Mongoid internals."
+        invalid_hash_key:
+          message: "Your hash key definition of '%{name} is invalid."
+          summary: "It does not meet the criteria as outlined for hash key definition
+            as described in the aws-sdk v2 for ruby"
+          resolution: "Look at the examples folder to see valid hash key definitions."
         hash_keys_only:
           message: "You can only search by defined hash_keys"
           summary: 'Only searches which use a hash key are permitted.

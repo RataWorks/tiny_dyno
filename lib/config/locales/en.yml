@@ -43,6 +43,13 @@ en:
             allowed, and don't use these names. These include names that also
             conflict with core Ruby methods on Object, Module, Enumerable, or
             included gems that inject methods into these or Mongoid internals."
+        hash_keys_only:
+          message: "You can only search by defined hash_keys"
+          summary: 'Only searches which use a hash key are permitted.
+             Queries that do not use a hash key are highly inefficient and not
+             advisable in production use.'
+          resolution: 'Document and analyse your access patterns and amend your document
+             model accordingly.'
         invalid_field_option:
           message: "Invalid option :%{option} provided for field :%{name}."
           summary: "Mongoid requires that you only provide valid options on each

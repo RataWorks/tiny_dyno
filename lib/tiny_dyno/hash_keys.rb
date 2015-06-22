@@ -9,14 +9,34 @@ module TinyDyno
       self.attribute_definitions = []
       self.key_schema = []
       self.hash_keys = []
+      @hash_key_fields = []
 
+    end
+
+    # return all defined hash keys on an instantiated object
+    # for further use in DynamoDB queries
+    #
+    def hash_key_as_selector
+      selector = {}
+      self.class.hash_keys.each { |hk| selector[hk[:attr]] = attributes[hk[:attr]] }
+      selector
     end
 
     module ClassMethods
 
+      # Return true/false, depending on whether the provided argument
+      # matches a defined hash key for this document model
+      # @example Hash key is defined?
+      #   Person.hash_key_is_defined?(:id)
+      #
+      # @param [ String ] name, the name of the hash key
+      # @return [ Boolean ] True, False
+      def hash_key_is_defined?(arg = nil)
+        @hash_key_fields.include?(arg)
+      end
+
+      # return the attribute_type as stored in the attribute_definitions
       def lookup_attribute_type(attribute_name)
-        # return the attribute_type as stored in the attribute_definitions
-        # purely for human consumption
         type = attribute_definitions.collect {|a| a[:attribute_type] if a[:attribute_name] == attribute_name }
         type.first
       end
@@ -54,6 +74,7 @@ module TinyDyno
             attr_type: attribute_definition[:attribute_type],
             key_type: key_schema[:key_type],
         }
+        @hash_key_fields << attribute_definition[:attribute_name]
       end
 
       # convert a hash key into a format as expected by
@@ -61,6 +82,8 @@ module TinyDyno
       def as_item_entry(hash_key)
 
       end
+
+      private
 
       # Return true or false, depending on whether the attribute_definitions on the model
       # meet the specification of the Aws Sdk
@@ -99,9 +122,12 @@ module TinyDyno
         }
       end
 
-      protected
-
-
+      # convert values in queries to DynamoDB
+      # into types as expected by DynamoDB
+      def dyno_typed_key(key:, val:)
+        typed_class = self.fields[key].options[:type]
+        return (document_typed(klass: typed_class, value: val))
+      end
 
     end
   end

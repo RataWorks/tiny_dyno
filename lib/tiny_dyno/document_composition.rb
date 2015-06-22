@@ -1,4 +1,5 @@
 require 'tiny_dyno/attributes'
+require 'tiny_dyno/changeable'
 require 'tiny_dyno/fields'
 require 'tiny_dyno/stateful'
 require 'tiny_dyno/tables'
@@ -10,6 +11,7 @@ module TinyDyno
     extend ActiveSupport::Concern
 
     include Attributes
+    include Changeable
     include Fields
     include HashKeys
     include Persistable
@@ -19,6 +21,7 @@ module TinyDyno
 
     MODULES = [
         Attributes,
+        Changeable,
         Fields,
         HashKeys,
         Persistable,

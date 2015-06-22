@@ -10,5 +10,18 @@ module TinyDyno
       connection.put_item(put_item_request).successful?
     end
 
+    def get_item(get_item_request:)
+      resp = connection.get_item(get_item_request)
+      if resp.respond_to?(:item)
+        resp.item
+      else
+        false
+      end
+    end
+
+    def delete_item(request:)
+      connection.delete_item(request).successful?
+    end
+
   end
 end

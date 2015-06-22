@@ -11,6 +11,30 @@ module TinyDyno
 
     attr_reader :attributes
 
+    # Read a value from the document attributes. If the value does not exist
+    # it will return nil.
+    #
+    # @example Read an attribute.
+    #   person.read_attribute(:title)
+    #
+    # @example Read an attribute (alternate syntax.)
+    #   person[:title]
+    #
+    # @param [ String, Symbol ] name The name of the attribute to get.
+    #
+    # @return [ Object ] The value of the attribute.
+    #
+    # @since 1.0.0
+    def read_attribute(name)
+      normalized = database_field_name(name.to_s)
+      if attribute_missing?(normalized)
+        raise ActiveModel::MissingAttributeError, "Missing attribute: '#{name}'."
+      end
+      attributes[normalized]
+    end
+    alias :[] :read_attribute
+
+
     # Write a single attribute to the document attribute hash. This will
     # also fire the before and after update callbacks, and perform any
     # necessary typecasting.
@@ -94,12 +118,38 @@ module TinyDyno
       # raise MissingAttributeError if fields[key].nil? and hash_keys.find_index { |a| a[:attr] == key }.nil?
       raise MissingAttributeError if fields[key].nil?
       typed_class = self.fields[key].options[:type]
-      if typed_class == String
-        value.blank? ? nil : value.to_s
-      elsif (typed_class == Integer or typed_class == Fixnum )
-        value.to_i
-      else
-        value
+      return (self.class.document_typed(klass: typed_class, value: value))
+    end
+
+    # Determine if the attribute is missing from the document, due to loading
+    # it from the database with missing fields.
+    #
+    # @example Is the attribute missing?
+    #   document.attribute_missing?("test")
+    #
+    # @param [ String ] name The name of the attribute.
+    #
+    # @return [ true, false ] If the attribute is missing.
+    #
+    # @since 4.0.0
+    def attribute_missing?(name)
+      return (!self.fields.keys.include?(name))
+    end
+
+    private
+
+
+    module ClassMethods
+
+      # convert to the type used on the Document
+      def document_typed(klass:, value: )
+        if klass == String
+          value.blank? ? nil : value.to_s
+        elsif (klass == Integer or klass == Fixnum )
+          value.to_i
+        else
+          value
+        end
       end
     end
 

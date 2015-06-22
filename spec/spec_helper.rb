@@ -21,6 +21,7 @@ end
 if ENV['SNAP_CI'] == 'true'
   Aws.config[:endpoint] = 'http://127.0.0.1:8000'
 else
+  require 'pry'
   Aws.config[:endpoint] = 'http://172.17.42.1:8000'
 end
 

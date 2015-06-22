@@ -14,7 +14,13 @@ module TinyDyno
 
     def request_put_item(options)
       request = build_put_item_request(options)
-      TinyDyno::Adapter.put_item(put_item_request: request)
+      if TinyDyno::Adapter.put_item(put_item_request: request)
+        @new_record = false
+        @changed_attributes = {}
+        return true
+      else
+        return false
+      end
     end
 
     # The target structure as per

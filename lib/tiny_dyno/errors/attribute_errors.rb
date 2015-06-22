@@ -2,7 +2,7 @@
 module TinyDyno
   module Errors
 
-    # This error is raised when trying to set a value in Mongoid that is not
+    # This error is raised when trying to set a value in TinyDyno that is not
     # already set with dynamic attributes or the field is not defined.
     class UnknownAttribute < TinyDynoError
 

@@ -37,7 +37,62 @@ module TinyDyno
       # raise ::TinyDyno::Errors::MissingHashKey.new(self.name) unless @hash_key.is_a?(Hash)
     end
 
+    def delete
+      request_delete
+    end
+
+    private
+
+    def request_delete
+      request = {
+          table_name: self.class.table_name,
+          key: hash_key_as_selector
+      }
+      TinyDyno::Adapter.delete_item(request: request)
+    end
+
     module ClassMethods
+
+      def where(options = {})
+        valid_option_keys(options)
+        get_query = build_where_query(options)
+        attributes = TinyDyno::Adapter.get_item(get_item_request: get_query)
+        if attributes.nil?
+          return false
+        else
+          self.new(attributes)
+        end
+      end
+
+      private
+
+      # minimimum implementation for now
+      # check that each option key relates to a hash_key present on the model
+      # do not permit scan queries
+      def valid_option_keys(options)
+        options.keys.each do |name|
+          named = name.to_s
+          raise TinyDyno::Errors::HashKeysOnly.new(klass: self.class, name: named) unless hash_key_is_defined?(named)
+        end
+      end
+
+      # minimimum implementation for now
+      # build simple query to retrieve document
+      # via get_item
+      # http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#get_item-instance_method
+      def build_where_query(options)
+        query_keys = {}
+        options.each do |k,v|
+          # as expected by DynamoDB
+          typed_key = k.to_s
+          query_keys[typed_key] = dyno_typed_key(key: typed_key, val: v)
+        end
+        {
+            table_name: self.table_name,
+            attributes_to_get: attribute_names,
+            key: query_keys
+        }
+      end
 
     end
 

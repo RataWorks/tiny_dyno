@@ -5,7 +5,6 @@ describe TinyDyno::Document do
 
   describe Person do
     it_behaves_like "tiny_dyno_document"
-
   end
 
   describe ".included" do

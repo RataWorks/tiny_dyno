@@ -41,8 +41,9 @@ module TinyDyno
     def changes
       _changes = {}
       changed.each do |attr|
+        next if attr.nil?
         change = attribute_change(attr)
-        _changes[attr] = change if change
+        _changes[attr] = change
       end
       _changes
     end

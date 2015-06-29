@@ -41,8 +41,6 @@ shared_examples_for "tiny_dyno_document" do
       expect(populated_doc.attributes.nil?).to be false
     end
 
-
-
   end
 
 end

@@ -4,9 +4,8 @@ module TinyDyno
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :table_name, :provisioned_throughput
+      class_attribute :provisioned_throughput
 
-      self.table_name = self.name.to_s.downcase
       self.provisioned_throughput ||= {
           read_capacity_units: 100,
           write_capacity_units: 100,
@@ -15,6 +14,10 @@ module TinyDyno
     end
 
     module ClassMethods
+
+      def table_name
+        self.name.to_s.downcase
+      end
 
       class << self
 
@@ -54,19 +57,31 @@ module TinyDyno
       end
 
       # Send the actual table creation to the DynamoDB API
+      # and expect no table to be present
       # @example Create the table for the class
-      #   Person.create_table
+      #   Person.create_table!
       # @return [ true ] If the operation succeeded
-      def create_table
+      def create_table!
         raise InvalidTableDefinition.new "#{ self.name } has invalid table configuration" unless model_table_config_is_valid?
         TinyDyno::Adapter.create_table(create_table_request)
       end
 
+
+      # Soft Create Request,
+      # which will accept that a table may already exist
+      # @example Create the table for the class
+      # @return [ true ] If the operation succeeded <or> the table was already created
+      def create_table
+        if TinyDyno::Adapter.table_exists?(table_name: self.table_name)
+          return true
+        end
+        raise InvalidTableDefinition.new "#{ self.name } has invalid table configuration" unless model_table_config_is_valid?
+        TinyDyno::Adapter.create_table(create_table_request)
+      end
       # Request the table to be deleted
       # @example Delete the table for the class
       #   Person.delete_table
       # @return [ true ] If the operation succeeded
-
       def delete_table
         TinyDyno::Adapter.delete_table(table_name: self.table_name)
       end
@@ -94,5 +109,6 @@ module TinyDyno
         }
       end
     end
+
   end
 end

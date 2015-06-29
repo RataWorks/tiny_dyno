@@ -84,6 +84,7 @@ Or install it yourself as:
 ```
 
 require 'tiny_dyno'
+
 class Person
   include TinyDyno::Document
 
@@ -94,6 +95,8 @@ class Person
   field :age, type: Integer
 
 end
+
+Person.create_table / Person.create_table!
 
 require 'fabrication'
 
@@ -118,4 +121,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/RataWorks/tiny_dyno.
+
+Please ensure documentation updates, test cases etc. are included for any pull requests
+ 
+For feature requests of currently unsupported DynamodB operations, please provide a raw, working usage example as example specification.
+ 
 

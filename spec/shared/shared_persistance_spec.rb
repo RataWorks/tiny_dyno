@@ -18,6 +18,15 @@ shared_examples_for "it is persistable" do
     it 'should list the table in the table_cache' do
       expect(TinyDyno::Adapter.table_names.include?(described_class.table_name ) ).to be true
     end
+
+    it 'will return true if a create_table request is issued for an existing table' do
+      expect(described_class.create_table).to eq true
+    end
+
+    it 'will raise an exception, if a create_table request is issued for an existing table' do
+      expect{ described_class.create_table! }.to raise_error(Aws::DynamoDB::Errors::ResourceInUseException)
+    end
+
   end
 
   context '#instance_methods' do

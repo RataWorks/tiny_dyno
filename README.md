@@ -84,6 +84,7 @@ Or install it yourself as:
 ```
 
 require 'tiny_dyno'
+
 class Person
   include TinyDyno::Document
 
@@ -94,6 +95,8 @@ class Person
   field :age, type: Integer
 
 end
+
+Person.create_table / Person.create_table!
 
 require 'fabrication'
 

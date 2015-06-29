@@ -24,7 +24,7 @@ directories %w(lib spec) \
 #  * zeus: 'zeus rspec' (requires the server to be started separately)
 #  * 'just' rspec: 'rspec'
 
-guard :rspec, cmd: "bundle exec rspec spec/tiny_dyno" do
+guard :rspec, cmd: "bundle exec rspec spec" do
   require "guard/rspec/dsl"
   dsl = Guard::RSpec::Dsl.new(self)
 

@@ -15,8 +15,8 @@ module TinyDyno
     def request_put_item(options)
       request = build_put_item_request(options)
       if TinyDyno::Adapter.put_item(put_item_request: request)
-        @new_record = false
-        @changed_attributes = {}
+        changes_applied
+        @new_record = nil
         return true
       else
         return false

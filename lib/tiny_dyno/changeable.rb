@@ -14,9 +14,10 @@ module TinyDyno
     # @return [ Array<String> ] The changed attributes.
     #
     # @since 2.4.0
-    def changed
-      changed_attributes.keys.select { |attr| attribute_change(attr) }
-    end
+    # def changed
+    #   binding.pry
+    #   changed_attributes.keys.select { |attr| attribute_change(attr) }
+    # end
 
     # Get the attribute changes.
     #
@@ -26,9 +27,9 @@ module TinyDyno
     # @return [ Hash<String, Object> ] The attribute changes.
     #
     # @since 2.4.0
-    def changed_attributes
-      @changed_attributes ||= {}
-    end
+    # def changed_attributes
+    #   @changed_attributes ||= {}
+    # end
 
     # Get all the changes for the document.
     #

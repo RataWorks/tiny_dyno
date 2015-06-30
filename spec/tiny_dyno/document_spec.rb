@@ -4,6 +4,22 @@ describe TinyDyno::Document do
 
   describe Person do
     it_behaves_like "tiny_dyno_document"
+
+    it 'can be instantiated without attributes' do
+      expect(described_class.new.class).to eq (described_class)
+      expect(described_class.new.attributes).to eq ({})
+    end
+
+  end
+
+  describe Account do
+    it_behaves_like "tiny_dyno_document"
+
+    it 'can be instantiated without attributes' do
+      expect(described_class.new.class).to eq (described_class)
+      expect(described_class.new.attributes.keys).to eq (['id'])
+    end
+
   end
 
   describe ".included" do

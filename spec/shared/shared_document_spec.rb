@@ -30,11 +30,6 @@ shared_examples_for "tiny_dyno_document" do
     expect(empty_doc.respond_to?(:restore_attributes)).to be true
   end
 
-  it 'can be instantiated without attributes' do
-    expect(described_class.new.class).to eq (described_class)
-    expect(described_class.new.attributes).to eq ({})
-  end
-
   context '#instance' do
 
     it 'should be instantiated with populated attributes' do

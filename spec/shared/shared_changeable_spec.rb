@@ -14,7 +14,9 @@ shared_examples_for "it is changeable" do
         empty_doc.send("#{k}=", v)
       end
       expect(new_doc.attributes == empty_doc.attributes).to eq true
-      expect(empty_doc.changes.size).to eq (new_doc.attributes.size)
+      new_doc.attributes.keys.each do |attr|
+        expect(empty_doc.attributes.keys.include?(attr)).to eq true
+      end
     end
   end
 end

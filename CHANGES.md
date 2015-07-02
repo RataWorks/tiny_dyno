@@ -1,4 +1,4 @@
-0.1.7 (2015-07-01)
+0.1.8 (2015-07-01)
 ------------------
 
 * Fixes - Raise Error, if multiple hash keys are being defined

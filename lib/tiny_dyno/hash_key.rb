@@ -1,62 +1,42 @@
+require 'pry'
+
 module TinyDyno
-  module HashKeys
+  module HashKey
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :attribute_definitions, :key_schema, :hash_keys
+      class_attribute :attribute_definitions, :key_schema, :primary_key
 
       # TODO :local_secondary_indexes, :global_secondary_indexes
-      self.attribute_definitions = []
-      self.key_schema = []
-      self.hash_keys = []
-      @hash_key_fields = []
-
+      self.attribute_definitions ||= []
+      self.key_schema ||= []
+      self.primary_key ||= {}
     end
 
     # return all defined hash keys on an instantiated object
-    # for further use in DynamoDB queries
+    # for further use in DynamoDB queries, i.e. to look up an object
     #
     def hash_key_as_selector
-      selector = {}
-      self.class.hash_keys.each { |hk| selector[hk[:attr]] = attributes[hk[:attr]] }
-      selector
+      { "#{ self.class.primary_key[:attr] }": attributes[self.class.primary_key[:attr]] }
     end
 
     module ClassMethods
 
-      # Return true/false, depending on whether the provided argument
-      # matches a defined hash key for this document model
-      # @example Hash key is defined?
-      #   Person.hash_key_is_defined?(:id)
-      #
-      # @param [ String ] name, the name of the hash key
-      # @return [ Boolean ] True, False
-      def hash_key_is_defined?(arg = nil)
-        @hash_key_fields.include?(arg)
-      end
-
-      # return the attribute_type as stored in the attribute_definitions
-      def lookup_attribute_type(attribute_name)
-        type = attribute_definitions.collect {|a| a[:attribute_type] if a[:attribute_name] == attribute_name }
-        type.first
-      end
-
-      # Defines all the fields that are accessible on the Document
-      # For each field that is defined, a getter and setter will be
-      # added as an instance method to the Document.
+      # Defines the primary key for the Document
+      # Only one primary key = hash_key is allowed in DynamoDB
       #
       # @example Define a field.
-      #   field :score, :type => Integer, :default => 0
+      #   hash_key :score, :type => Integer
       #
-      # @param [ Symbol ] name The name of the field.
-      # @param [ Hash ] options The options to pass to the field.
+      # @param [ Symbol ] name The name of the hash_key.
+      # @param [ Hash ] options The options to pass to the hash_key.
       #
       # @option options [ Class ] :type The type of the field.
       # @option options [ String ] :label The label for the field.
-      # @option options [ Object, Proc ] :default The field's default
       #
       # @return [ Field ] The generated field
       def hash_key(name, options = {})
+        raise TinyDyno::Errors::OnlyOneHashKeyPermitted.new(klass: self.class, name: name) unless primary_key.empty?
         named = name.to_s
         attribute_definition = build_attribute_definition(named,options[:type])
         key_schema = build_key_schema(named)
@@ -67,14 +47,11 @@ module TinyDyno
         add_field(named, options)
         self.attribute_definitions << attribute_definition
         self.key_schema << key_schema
-        # TODO
-        # should separate that out
-        self.hash_keys << {
+        self.primary_key = {
             attr: attribute_definition[:attribute_name],
             attr_type: attribute_definition[:attribute_type],
             key_type: key_schema[:key_type],
         }
-        @hash_key_fields << attribute_definition[:attribute_name]
       end
 
       # convert a hash key into a format as expected by

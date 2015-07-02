@@ -50,14 +50,13 @@ module TinyDyno
   end
 end
 
-
 # encoding: utf-8
 module TinyDyno
   module Errors
 
     # This error is raised, when a query is performed with fields specified
     # that are not HashKeys, which would result in a table scan
-    class HashKeysOnly < TinyDynoError
+    class HashKeyOnly < TinyDynoError
 
       # Create the new error.
       #
@@ -76,3 +75,30 @@ module TinyDyno
     end
   end
 end
+
+# encoding: utf-8
+module TinyDyno
+  module Errors
+
+    # This error is raised, when a query is performed with fields specified
+    # that are not HashKeys, which would result in a table scan
+    class OnlyOneHashKeyPermitted < TinyDynoError
+
+      # Create the new error.
+      #
+      # @example Instantiate the error.
+      #   OnlyOneHashKeyPermitted.new(Person, "gender")
+      #
+      # @param [ Class ] klass The model class.
+      # @param [ String, Symbol ] name The name of the attribute.
+      #
+      # @since 3.0.0
+      def initialize(klass:, name:)
+        super(
+            compose_message("you can only define one hash_key", { klass: klass.name, name: name })
+        )
+      end
+    end
+  end
+end
+

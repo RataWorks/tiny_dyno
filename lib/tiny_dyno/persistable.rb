@@ -4,7 +4,13 @@ module TinyDyno
 
     def save(options = {})
       if new_record?
-        request_put_item(options)
+        if request_put_item(options)
+          changes_applied
+          @new_record = nil
+          return true
+        else
+          return false
+        end
       else
         request_update_item(options)
       end
@@ -13,14 +19,8 @@ module TinyDyno
     private
 
     def request_put_item(options)
-      request = build_put_item_request(options)
-      if TinyDyno::Adapter.put_item(put_item_request: request)
-        changes_applied
-        @new_record = nil
-        return true
-      else
-        return false
-      end
+      request = request_as_new_record(build_item_request(options))
+      return(TinyDyno::Adapter.put_item(put_item_request: request))
     end
 
     # The target structure as per
@@ -51,7 +51,7 @@ module TinyDyno
     #                                "ExpressionAttributeValueVariable" => "value", # value <Hash,Array,String,Numeric,Boolean,IO,Set,nil>
     #                            },
     #                        })
-    def build_put_item_request(options)
+    def build_item_request(options)
       {
           table_name: self.class.table_name,
           item: build_item_request_entries

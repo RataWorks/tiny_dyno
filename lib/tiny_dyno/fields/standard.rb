@@ -41,24 +41,24 @@ module TinyDyno
 
       private
 
-      # Is the field included in the fields that were returned from the
-      # database? We can apply the default if:
-      #   1. The field is included in an only limitation (field: 1)
-      #   2. The field is not excluded in a without limitation (field: 0)
+      # # Is the field included in the fields that were returned from the
+      # # database? We can apply the default if:
+      # #   1. The field is included in an only limitation (field: 1)
+      # #   2. The field is not excluded in a without limitation (field: 0)
+      # #
+      # # @example Is the field included?
+      # #   field.included?(fields)
+      # #
+      # # @param [ Hash ] fields The field limitations.
+      # #
+      # # @return [ true, false ] If the field was included.
+      # #
+      # # @since 2.4.4
+      # def included?(fields)
+      #   (fields.values.first == 1 && fields[name.to_s] == 1) ||
+      #       (fields.values.first == 0 && !fields.has_key?(name.to_s))
+      # end
       #
-      # @example Is the field included?
-      #   field.included?(fields)
-      #
-      # @param [ Hash ] fields The field limitations.
-      #
-      # @return [ true, false ] If the field was included.
-      #
-      # @since 2.4.4
-      def included?(fields)
-        (fields.values.first == 1 && fields[name.to_s] == 1) ||
-            (fields.values.first == 0 && !fields.has_key?(name.to_s))
-      end
-
     end
   end
 end

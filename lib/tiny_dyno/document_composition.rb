@@ -3,27 +3,29 @@ require 'tiny_dyno/changeable'
 require 'tiny_dyno/fields'
 require 'tiny_dyno/stateful'
 require 'tiny_dyno/tables'
-require 'tiny_dyno/hash_keys'
+require 'tiny_dyno/hash_key'
 require 'tiny_dyno/persistable'
+require 'tiny_dyno/expected'
 
 module TinyDyno
   module DocumentComposition
     extend ActiveSupport::Concern
 
     include Attributes
+    include Expected
     include Changeable
     include Fields
-    include HashKeys
+    include HashKey
     include Persistable
     include Stateful
     include Tables
 
-
     MODULES = [
         Attributes,
+        Expected,
         Changeable,
         Fields,
-        HashKeys,
+        HashKey,
         Persistable,
         Stateful,
         Tables,

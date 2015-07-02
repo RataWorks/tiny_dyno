@@ -70,10 +70,10 @@ module TinyDyno
       # check that each option key relates to a hash_key present on the model
       # do not permit scan queries
       def valid_option_keys(options)
-        options.keys.each do |name|
-          named = name.to_s
-          raise TinyDyno::Errors::HashKeysOnly.new(klass: self.class, name: named) unless hash_key_is_defined?(named)
-        end
+        raise TinyDyno::Errors::HashKeyOnly.new(klass: self.class, name: 'primary_key') if primary_key.nil?
+        # options.keys.each do |name|
+        #   named = name.to_s
+        # end
       end
 
       # minimimum implementation for now

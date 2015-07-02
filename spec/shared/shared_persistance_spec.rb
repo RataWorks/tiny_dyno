@@ -60,6 +60,14 @@ shared_examples_for "it is persistable" do
       end
     end
 
+    it 'does not overwrite existing records' do
+      new_person = Fabricate.create(:person)
+      new_person.save
+      another_person = Fabricate.create(:person)
+      another_person.id = new_person.id
+      expect { another_person.save }.to raise_error(Aws::DynamoDB::Errors::ConditionalCheckFailedException)
+    end
+
   end
 
 end

@@ -1,5 +1,3 @@
-require 'pry'
-
 module TinyDyno
   module HashKey
     extend ActiveSupport::Concern

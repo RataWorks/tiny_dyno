@@ -68,6 +68,57 @@ shared_examples_for "it is persistable" do
       expect { another_person.save }.to raise_error(Aws::DynamoDB::Errors::ConditionalCheckFailedException)
     end
 
+    describe '.update_item' do
+      it 'adds (string) updates to an item' do
+        new_person = Fabricate.create(:person)
+        new_person.save
+        new_person.first_name = new_person.first_name + new_person.first_name
+        new_person.save
+        loaded_person = Person.where(id: new_person.id)
+        expect(loaded_person.first_name).to eq(new_person.first_name)
+      end
+
+      it 'adds (integer) updates to an item' do
+        new_person = Fabricate.create(:person)
+        new_person.save
+        new_age = Faker::Number.number(3).to_i
+        new_person.age = new_age
+        new_person.save
+        loaded_person = Person.where(id: new_person.id)
+        expect(loaded_person.age).to eql new_age
+      end
+
+      it 'persists removal of attributes to an item' do
+        new_person = Fabricate.create(:person)
+        new_person.save
+        new_person.first_name = nil
+        new_person.save
+        loaded_person = Person.where(id: new_person.id)
+        expect(loaded_person.first_name).to be nil
+      end
+
+      it 'persists removal of attributes to an item' do
+        new_person = Fabricate.create(:person)
+        new_person.save
+        new_person.first_name = nil
+        new_person.save
+        loaded_person = Person.where(id: new_person.id)
+        expect(loaded_person.first_name).to be nil
+      end
+
+      it 'allows addition of previously empty attributes' do
+        new_person = Fabricate.create(:person, first_name: nil)
+        new_person.save
+        loaded_person = Person.where(id: new_person.id)
+        expect(loaded_person.first_name).to be nil
+        loaded_person.first_name = Faker::Name.first_name
+        expect(loaded_person.save).to be true
+        reloaded_person = Person.where(id: new_person.id)
+        expect(reloaded_person.first_name).to eql loaded_person.first_name
+      end
+
+    end
+
   end
 
 end

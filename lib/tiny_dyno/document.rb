@@ -60,7 +60,10 @@ module TinyDyno
         if attributes.nil?
           return false
         else
-          self.new(attributes)
+          record = self.new(attributes)
+          record.instance_variable_set(:@new_record, false)
+          record.instance_variable_set(:@changed_attributes, {})
+          record
         end
       end
 

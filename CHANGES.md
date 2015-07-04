@@ -1,3 +1,7 @@
+0.1.10 (2015-07-04)
+
+* New - (basic) update_item support, for atomic PUT and DELETE actions, no support for ADD action yet
+
 0.1.9 (2015-07-01)
 -----------------
 

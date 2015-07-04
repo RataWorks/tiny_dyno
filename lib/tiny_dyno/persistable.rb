@@ -12,7 +12,7 @@ module TinyDyno
           return false
         end
       else
-        if request_update_item(options)
+        if request_replace_item(options)
           changes_applied
           return true
         else
@@ -28,9 +28,9 @@ module TinyDyno
       return(TinyDyno::Adapter.put_item(put_item_request: request))
     end
 
-    def request_update_item(options)
-      request = build_update_item_request
-      return(TinyDyno::Adapter.update_item(update_item_request: request))
+    def request_replace_item(options)
+      request = build_put_item_request
+      return(TinyDyno::Adapter.put_item(put_item_request: request))
     end
 
     def build_put_item_request
@@ -40,13 +40,13 @@ module TinyDyno
       }
     end
 
-    def build_update_item_request
-      {
-          key: hash_key_as_selector,
-          table_name: self.class.table_name,
-          attribute_updates: build_attribute_updates
-      }
-    end
+    # def build_update_item_request
+    #   {
+    #       key: hash_key_as_selector,
+    #       table_name: self.class.table_name,
+    #       attribute_updates: build_attribute_updates
+    #   }
+    # end
 
     def build_item_request_entries
       item_entries = {}
@@ -59,34 +59,34 @@ module TinyDyno
     #     value: "value", # value <Hash,Array,String,Numeric,Boolean,IO,Set,nil>
     #     action: "ADD", # accepts ADD, PUT, DELETE
     # },
-    def build_attribute_updates
-      change_record = []
-      changes.keys.each do |change_key|
-        if self.class.attribute_names.include?(change_key)
-          change_record << {:"#{ change_key}" => changes[change_key]}
-        end
-      end
-      # keep this simple for now
-      # I don't see (yet) how to map the possible operations on dynamodb items
-      # into activerecord compatible schemas
-      # extend as use cases arise
-      # specification by example ...
-      attribute_updates = {}
-      change_record.each do |change|
-        change_key = change.keys.first
-        if change[change_key][1].nil?
-          attribute_updates[change_key] = {
-              action: 'DELETE'
-          }
-        else
-          attribute_updates[change_key] = {
-              value:  change[change_key][1],
-              action: 'PUT'
-          }
-        end
-      end
-      attribute_updates
-    end
+    # def build_attribute_updates
+    #   change_record = []
+    #   changes.keys.each do |change_key|
+    #     if self.class.attribute_names.include?(change_key)
+    #       change_record << {:"#{ change_key}" => changes[change_key]}
+    #     end
+    #   end
+    #   # keep this simple for now
+    #   # I don't see (yet) how to map the possible operations on dynamodb items
+    #   # into activerecord compatible schemas
+    #   # extend as use cases arise
+    #   # specification by example ...
+    #   attribute_updates = {}
+    #   change_record.each do |change|
+    #     change_key = change.keys.first
+    #     if change[change_key][1].nil?
+    #       attribute_updates[change_key] = {
+    #           action: 'DELETE'
+    #       }
+    #     else
+    #       attribute_updates[change_key] = {
+    #           value:  change[change_key][1],
+    #           action: 'PUT'
+    #       }
+    #     end
+    #   end
+    #   attribute_updates
+    # end
 
     module ClassMethods
 

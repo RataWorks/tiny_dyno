@@ -1,4 +1,11 @@
+0.1.11 (2015-07-04)
+-------------------
+
+* Fix - retract update_item support
+        Instead add a modified put operation, which will overwrite an entire record, when saving an update to an already existing object
+        
 0.1.10 (2015-07-04)
+-------------------
 
 * New - (basic) update_item support, for atomic PUT and DELETE actions, no support for ADD action yet
 

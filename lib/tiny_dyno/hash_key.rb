@@ -37,7 +37,7 @@ module TinyDyno
         raise TinyDyno::Errors::OnlyOneHashKeyPermitted.new(klass: self.class, name: name) unless primary_key.empty?
         named = name.to_s
         attribute_definition = build_attribute_definition(named,options[:type])
-        key_schema = build_key_schema(named)
+        key_schema = hash_key_schema(named)
         unless attribute_definition_meets_spec?(attribute_definition)
           raise TinyDyno::Errors::InvalidHashKey.new(klass: self.class, name: name)
         end
@@ -50,12 +50,6 @@ module TinyDyno
             attr_type: attribute_definition[:attribute_type],
             key_type: key_schema[:key_type],
         }
-      end
-
-      # convert a hash key into a format as expected by
-      # put_item and update_item request
-      def as_item_entry(hash_key)
-
       end
 
       private
@@ -80,17 +74,17 @@ module TinyDyno
       def build_attribute_definition(name, key_type)
         {
             attribute_name: name,
-            attribute_type: hash_key_type(key_type)
+            attribute_type: determine_key_class(key_type)
         }
       end
 
-      def hash_key_type(key_type = nil)
+      def determine_key_class(key_type = nil)
         return 'S' if key_type == String
         return 'N' if key_type == Fixnum or key_type == Integer
         return nil
       end
 
-      def build_key_schema(name)
+      def hash_key_schema(name)
         {
             attribute_name: name,
             key_type: 'HASH'

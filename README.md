@@ -81,18 +81,32 @@ Or install it yourself as:
 
 ## Usage
 
+It is highly recommended to work through the specs and also the fabricators and models in the spec folder to see example implementations.
+
 ```
 
+require 'securerandom'
 require 'tiny_dyno'
 
-class Person
+
+class Account
   include TinyDyno::Document
 
-  hash_key :id, type: Integer
+  hash_key :id, type: String
 
-  field :first_name, type: String
-  field :last_name, type: String
-  field :age, type: Integer
+  field :email, type: String, range_key: true
+  field :label, type: String
+
+  validates_presence_of :id, :email, :label
+
+  def initialize(attrs = nil)
+    super
+    set_id if id.nil?
+  end
+
+  def set_id
+    self.id ||= SecureRandom.uuid
+  end
 
 end
 

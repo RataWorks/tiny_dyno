@@ -1,4 +1,5 @@
 require 'tiny_dyno/fields/standard'
+require 'tiny_dyno/fields/range_key'
 
 module TinyDyno
   module Fields
@@ -166,7 +167,6 @@ module TinyDyno
       # @param [ Field ] field the field to process
       def process_options(field)
         field_options = field.options
-
         Fields.options.each_pair do |option_name, handler|
           if field_options.key?(option_name)
             handler.call(self, field, field_options[option_name])
@@ -176,7 +176,14 @@ module TinyDyno
 
       def field_for(name, options)
         opts = options.merge(klass: self)
-        Fields::Standard.new(name, opts)
+        if opts.has_key?(:range_key) && opts[:range_key] == true
+          named = name.to_s
+          attribute_definitions << build_attribute_definition(named,options[:type])
+          key_schema << { attribute_name: named, key_type: 'RANGE' }
+          Fields::RangeKey.new(name, opts)
+        else
+          Fields::Standard.new(name, opts)
+        end
       end
 
       # Create the field accessors.

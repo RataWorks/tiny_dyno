@@ -6,7 +6,7 @@ class Account
 
   hash_key :id, type: String
 
-  field :email, type: String
+  field :email, type: String, range_key: true
   field :label, type: String
 
   validates_presence_of :id, :email, :label

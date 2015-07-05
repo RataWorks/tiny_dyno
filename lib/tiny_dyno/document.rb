@@ -53,8 +53,9 @@ module TinyDyno
 
     module ClassMethods
 
+      # TODO, extract into its own class to allow better testing
       def where(options = {})
-        valid_option_keys(options)
+        validate_option_keys(options)
         get_query = build_where_query(options)
         attributes = TinyDyno::Adapter.get_item(get_item_request: get_query)
         if attributes.nil?
@@ -67,16 +68,21 @@ module TinyDyno
         end
       end
 
+
       private
 
       # minimimum implementation for now
       # check that each option key relates to a hash_key present on the model
       # do not permit scan queries
-      def valid_option_keys(options)
+      def validate_option_keys(options)
         raise TinyDyno::Errors::HashKeyOnly.new(klass: self.class, name: 'primary_key') if primary_key.nil?
-        # options.keys.each do |name|
-        #   named = name.to_s
-        # end
+        options.keys.each do |key|
+          raise TinyDyno::Errors::InvalidSelector.new(klass: self.class, name: key) unless valid_field_selector?(field_name: key.to_s)
+        end
+      end
+
+      def valid_field_selector?(field_name:)
+        key_schema.map {|k| k[:attribute_name] }.include?(field_name)
       end
 
       # minimimum implementation for now

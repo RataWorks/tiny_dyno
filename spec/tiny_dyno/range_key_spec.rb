@@ -20,17 +20,18 @@ describe TinyDyno::Fields::RangeKey do
     after(:each) {
       Account.delete_table
     }
-  end
 
-  it 'enables look ups by range key' do
-    account = Fabricate(:account)
-    account.save
-    same_account = Account.where(id: account.id, email: account.email)
-    expect(account.attributes).to eq(same_account.attributes)
-  end
+    it 'enables look ups by range key' do
+      account = Fabricate(:account)
+      account.save
+      same_account = Account.where(id: account.id, email: account.email)
+      expect(account.attributes).to eq(same_account.attributes)
+    end
 
-  it 'raises an error, when specifying a non key field as selector' do
-    expect { Account.where(id: '1', label: 'foo') }.to raise_error (TinyDyno::Errors::InvalidSelector)
+    it 'raises an error, when specifying a non key field as selector' do
+      expect { Account.where(id: '1', label: 'foo') }.to raise_error (TinyDyno::Errors::InvalidSelector)
+    end
+
   end
 
 end

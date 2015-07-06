@@ -59,7 +59,7 @@ module TinyDyno
         get_query = build_where_query(options)
         attributes = TinyDyno::Adapter.get_item(get_item_request: get_query)
         if attributes.nil?
-          return false
+          return nil
         else
           record = self.new(attributes)
           record.instance_variable_set(:@new_record, false)

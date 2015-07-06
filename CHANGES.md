@@ -1,3 +1,8 @@
+0.1.13 (2015-07-06)
+-------------------
+
+* Fix - return nil (not false), when a .where lookup does not match a document
+
 0.1.12 (2015-07-04)
 -------------------
 

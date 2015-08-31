@@ -7,6 +7,7 @@ module TinyDyno
     end
 
     def put_item(put_item_request:)
+      binding.pry
       connection.put_item(put_item_request).successful?
     end
 
@@ -15,7 +16,7 @@ module TinyDyno
       if resp.respond_to?(:item)
         resp.item
       else
-        false
+        nil
       end
     end
 

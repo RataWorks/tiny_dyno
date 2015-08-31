@@ -96,7 +96,11 @@ module TinyDyno
 
       def create(attributes = nil, &block)
         doc = new(attributes, &block)
-        doc.save
+        if doc.save
+          doc
+        else
+          nil
+        end
       end
 
       private

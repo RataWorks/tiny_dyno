@@ -33,6 +33,10 @@ module TinyDyno
       @connection = nil
     end
 
+    def query(body:)
+      @connection.query(body)
+    end
+
     protected
 
     def connection

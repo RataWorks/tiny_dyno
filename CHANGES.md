@@ -1,3 +1,17 @@
+0.1.16 (2015-09-04)
+
+* New - Add boolean field type support and introduce type checking on setting field values to assert correct type coercion, when setting values
+
+0.1.15 (2015-09-04)
+-------------------
+
+* New - add query proxy method, to support arbitrary queries to dynamodb
+
+0.1.14 (2015-08-31)
+-------------------
+
+* Fix - TinyDyno::Document.create now returns either the persisted document or nil
+
 0.1.13 (2015-07-06)
 -------------------
 

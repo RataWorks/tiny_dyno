@@ -34,8 +34,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec', '~> 4.5'
   spec.add_development_dependency 'fabrication', '~> 2.13'
   spec.add_development_dependency 'faker', '~> 1.4'
-  # spec.add_development_dependency 'awesome_print'
-  # spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'awesome_print'
+  spec.add_development_dependency 'pry'
 
   spec.add_dependency 'aws-sdk', '~> 2.1.2'
   spec.add_dependency 'activemodel', '~> 4.2.3'

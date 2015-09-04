@@ -94,8 +94,8 @@ module TinyDyno
       # convert values in queries to DynamoDB
       # into types as expected by DynamoDB
       def dyno_typed_key(key:, val:)
-        typed_class = self.fields[key].options[:type]
-        return (document_typed(klass: typed_class, value: val))
+        field_type = self.fields[key].options[:type]
+        return (document_typed(field_type: field_type, value: val))
       end
 
     end

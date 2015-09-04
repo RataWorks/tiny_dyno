@@ -117,8 +117,8 @@ module TinyDyno
     def typed_value_for(key, value)
       # raise MissingAttributeError if fields[key].nil? and hash_keys.find_index { |a| a[:attr] == key }.nil?
       raise MissingAttributeError if fields[key].nil?
-      typed_class = self.fields[key].options[:type]
-      return (self.class.document_typed(klass: typed_class, value: value))
+      field_type = self.fields[key].options[:type]
+      return (self.class.document_typed(field_type: field_type, value: value))
     end
 
     # Determine if the attribute is missing from the document, due to loading
@@ -138,19 +138,24 @@ module TinyDyno
 
     private
 
-
     module ClassMethods
 
-      # convert to the type used on the Document
-      def document_typed(klass:, value: )
-        if klass == String
-          value.blank? ? nil : value.to_s
-        elsif (klass == Integer or klass == Fixnum )
-          value.to_i
-        else
-          value
+      def document_typed(field_type:, value: )
+        return value if value.nil?
+        case field_type.to_s
+          when 'TinyDyno::Boolean'
+            return value if [true,false].include?(value)
+            raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value)
+          when 'Integer'
+            return value.to_i if value.to_i != 0 and value != '0'
+            return value.to_i if value.to_i === 0 and value == '0'
+            return value.to_i if value.is_a?(Integer)
+            raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value)
+          else
+            return field_type.send(:new, value)
         end
-      end
+      end #document_typed
+
     end
 
   end

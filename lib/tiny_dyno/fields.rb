@@ -5,7 +5,7 @@ module TinyDyno
   module Fields
     extend ActiveSupport::Concern
 
-    TYPE_MAPPINGS= {
+    TYPE_MAPPINGS = {
         # binary_blob: 'B',
         bool: ::TinyDyno::Boolean,
         # binary_set: Array,
@@ -19,7 +19,7 @@ module TinyDyno
         time: Time,
     }
 
-    SUPPORTED_FIELD_TYPES = [Array, Hash, Integer, Array, String, Time].freeze
+    SUPPORTED_FIELD_TYPES = [Array, ::TinyDyno::Boolean, Hash, Integer, Array, String, Time].freeze
 
     included do
       class_attribute :fields
@@ -249,6 +249,7 @@ module TinyDyno
           end
         end
       end
+
       # Create the setter method for the provided field.
       #
       # @example Create the setter.
@@ -260,6 +261,7 @@ module TinyDyno
       def create_field_setter(name, meth, field)
         generated_methods.module_eval do
           re_define_method("#{meth}=") do |value|
+            value = typed_value_for(name,value)
             val = write_attribute(name, value)
             val
           end

@@ -7,7 +7,7 @@ module TinyDyno
 
     TYPE_MAPPINGS= {
         # binary_blob: 'B',
-        # bool: Boolean,
+        bool: ::TinyDyno::Boolean,
         # binary_set: Array,
         list: Array,
         map: Hash,

@@ -8,6 +8,7 @@ class Account
 
   field :email, type: String, range_key: true
   field :label, type: String
+  field :active, type: TinyDyno::Boolean
 
   validates_presence_of :id, :email, :label
 

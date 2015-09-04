@@ -15,9 +15,9 @@ module TinyDyno
       # @param [ String, Symbol ] name The name of the attribute.
       #
       # @since 3.0.0
-      def initialize(klass:, name:, value: value)
+      def initialize(klass:, name:, value:)
         super(
-            compose_message("value, can not be typecasted", { klass: klass.name, name: name, value: value })
+            compose_message("value_not_typecasted", { klass: klass.name, name: name, value: value })
         )
       end
     end

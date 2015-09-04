@@ -159,6 +159,12 @@ en:
             since the child could potentially reference a nonexistant parent."
           resolution: "Make sure to only use create or create! when the parent
             document %{base} is persisted."
+        value_not_typecasted:
+          message: "Value %{value} is not the correct type in field %{name}"
+          summary: "You can not assign values of this type, to a field of type
+            %{name}"
+          resolution: "Only assign supported values to field %{name} or change
+            the field type."
         validations:
           message: "Validation of %{document} failed."
           summary: "The following errors were found: %{errors}"

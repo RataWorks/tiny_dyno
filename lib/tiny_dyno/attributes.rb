@@ -1,5 +1,4 @@
 require 'active_model/attribute_methods'
-
 require 'tiny_dyno/attributes/readonly'
 
 module TinyDyno
@@ -140,21 +139,36 @@ module TinyDyno
 
     module ClassMethods
 
-      def document_typed(field_type:, value: )
+      def document_typed(field_type:, value:)
         return value if value.nil?
+        # run this through the aws-sdk marshaller
+        # to trigger type casting problems early
+        # and verify we end up with the requested type
+
         case field_type.to_s
+          when 'Integer' then
+            typed_value = value.to_i if value.to_i != 0 and value != '0'
+            typed_value = value.to_i if value.to_i === 0 and value == '0'
+            typed_value = value.to_i if value.is_a?(Integer)
+
+          when 'String' then typed_value = value.to_s
           when 'TinyDyno::Boolean'
-            return value if [true,false].include?(value)
-            raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value)
-          when 'Integer'
-            return value.to_i if value.to_i != 0 and value != '0'
-            return value.to_i if value.to_i === 0 and value == '0'
-            return value.to_i if value.is_a?(Integer)
-            raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value)
+            unless [true,false].include?(value)
+              raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value)
+            end
+            typed_value = value
           else
-            return field_type.send(:new, value)
+            typed_value = value
         end
-      end #document_typed
+
+        av = Aws::DynamoDB::AttributeValue.new
+        typed_for_dynamodb = av.marshal(typed_value)
+        dyno_field_type = TinyDyno::Fields::TYPE_MAPPINGS[typed_for_dynamodb.keys.first]
+
+        raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value) unless field_type == dyno_field_type
+        # raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value) unless value.to_s == typed_value.to_s
+        typed_value
+      end
 
     end
 

@@ -6,17 +6,11 @@ module TinyDyno
     extend ActiveSupport::Concern
 
     TYPE_MAPPINGS = {
-        # binary_blob: 'B',
-        bool: ::TinyDyno::Boolean,
-        # binary_set: Array,
-        list: Array,
-        map: Hash,
-        number: Integer,
-        number_set: Array,
-        # null: Null,
-        string: String,
-        string_set: Array,
-        time: Time,
+        :bool => ::TinyDyno::Boolean,
+        :l => Hash,
+        :m => Array,
+        :n => Integer,
+        :s => String
     }
 
     SUPPORTED_FIELD_TYPES = [Array, ::TinyDyno::Boolean, Hash, Integer, Array, String, Time].freeze

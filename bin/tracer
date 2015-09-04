@@ -13,7 +13,6 @@ class SmallPerson
 
 end
 
-require 'tracer'
-Tracer.on
 sm = SmallPerson.new(first_name: 'peter_parker')
-
+sm.age = '27'
+sm.age = 'foobar'

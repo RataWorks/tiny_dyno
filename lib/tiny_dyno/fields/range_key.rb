@@ -26,10 +26,6 @@ module TinyDyno
         @type = options[:type]
       end
 
-      def as_selector
-        binding.pry
-      end
-
     end
   end
 end

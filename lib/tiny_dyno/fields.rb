@@ -5,16 +5,6 @@ module TinyDyno
   module Fields
     extend ActiveSupport::Concern
 
-    TYPE_MAPPINGS = {
-        :bool => ::TinyDyno::Boolean,
-        :l => Hash,
-        :m => Array,
-        :n => Integer,
-        :s => String
-    }
-
-    SUPPORTED_FIELD_TYPES = [Array, ::TinyDyno::Boolean, Hash, Integer, Array, String, Time].freeze
-
     included do
       class_attribute :fields
 

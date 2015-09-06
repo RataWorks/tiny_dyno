@@ -95,7 +95,7 @@ module TinyDyno
       # into types as expected by DynamoDB
       def dyno_typed_key(key:, val:)
         field_type = self.fields[key].options[:type]
-        return (document_typed(field_type: field_type, value: val))
+        return (TinyDyno::Adapter.aws_attribute(field_type: field_type, obj: value))
       end
 
     end

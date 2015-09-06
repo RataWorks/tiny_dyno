@@ -1,4 +1,5 @@
 require 'active_model'
+require 'active_support/core_ext/hash/indifferent_access'
 require 'aws-sdk'
 
 require 'tiny_dyno/extensions'

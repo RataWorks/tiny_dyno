@@ -12,6 +12,7 @@ describe 'Boolean Field Test' do
   let(:my_account) { Fabricate.build(:account) }
 
   it 'should save a document with a boolean type' do
+    # binding.pry
     expect([true,false].include?(my_account.active)).to be true
     expect(my_account.save).to be true
   end

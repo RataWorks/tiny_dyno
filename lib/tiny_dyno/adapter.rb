@@ -2,6 +2,7 @@ require 'aws-sdk'
 
 require 'tiny_dyno/adapter/tables'
 require 'tiny_dyno/adapter/items'
+require 'tiny_dyno/adapter/attributes'
 
 module TinyDyno
 
@@ -42,7 +43,7 @@ module TinyDyno
     def connection
       unless @connection
         TinyDyno.logger.info 'setting up new connection ... ' if TinyDyno.logger
-        @connection =  Aws::DynamoDB::Client.new
+        @connection =  Aws::DynamoDB::Client.new(simple_attributes: false)
         update_table_cache
       end
       @connection

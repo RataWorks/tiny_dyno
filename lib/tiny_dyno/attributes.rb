@@ -1,6 +1,8 @@
 require 'active_model/attribute_methods'
 require 'tiny_dyno/attributes/readonly'
 
+require 'pry'
+
 module TinyDyno
   module Attributes
 
@@ -117,7 +119,7 @@ module TinyDyno
       # raise MissingAttributeError if fields[key].nil? and hash_keys.find_index { |a| a[:attr] == key }.nil?
       raise MissingAttributeError if fields[key].nil?
       field_type = self.fields[key].options[:type]
-      return (self.class.document_typed(field_type: field_type, value: value))
+      return (TinyDyno::Adapter.aws_attribute(field_type: field_type, value: value))
     end
 
     # Determine if the attribute is missing from the document, due to loading
@@ -133,43 +135,6 @@ module TinyDyno
     # @since 4.0.0
     def attribute_missing?(name)
       return (!self.fields.keys.include?(name))
-    end
-
-    private
-
-    module ClassMethods
-
-      def document_typed(field_type:, value:)
-        return value if value.nil?
-        # run this through the aws-sdk marshaller
-        # to trigger type casting problems early
-        # and verify we end up with the requested type
-
-        case field_type.to_s
-          when 'Integer' then
-            typed_value = value.to_i if value.to_i != 0 and value != '0'
-            typed_value = value.to_i if value.to_i === 0 and value == '0'
-            typed_value = value.to_i if value.is_a?(Integer)
-
-          when 'String' then typed_value = value.to_s
-          when 'TinyDyno::Boolean'
-            unless [true,false].include?(value)
-              raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value)
-            end
-            typed_value = value
-          else
-            typed_value = value
-        end
-
-        av = Aws::DynamoDB::AttributeValue.new
-        typed_for_dynamodb = av.marshal(typed_value)
-        dyno_field_type = TinyDyno::Fields::TYPE_MAPPINGS[typed_for_dynamodb.keys.first]
-
-        raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value) unless field_type == dyno_field_type
-        # raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: field_type, value: value) unless value.to_s == typed_value.to_s
-        typed_value
-      end
-
     end
 
   end

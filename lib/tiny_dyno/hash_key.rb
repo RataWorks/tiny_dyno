@@ -15,7 +15,8 @@ module TinyDyno
     # for further use in DynamoDB queries, i.e. to look up an object
     #
     def hash_key_as_selector
-      { "#{ self.class.primary_key[:attr] }": attributes[self.class.primary_key[:attr]] }
+      key_field = self.class.primary_key[:attr]
+      { "#{ self.class.primary_key[:attr] }": TinyDyno::Adapter.aws_attribute(field_type: fields[key_field].options[:type], value: attributes[key_field]) }
     end
 
     module ClassMethods
@@ -95,7 +96,7 @@ module TinyDyno
       # into types as expected by DynamoDB
       def dyno_typed_key(key:, val:)
         field_type = self.fields[key].options[:type]
-        return (TinyDyno::Adapter.aws_attribute(field_type: field_type, obj: value))
+        return (TinyDyno::Adapter.aws_attribute(field_type: field_type, value: val))
       end
 
     end

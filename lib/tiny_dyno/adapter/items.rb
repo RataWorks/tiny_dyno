@@ -13,7 +13,9 @@ module TinyDyno
     def get_item(get_item_request:)
       resp = connection.get_item(get_item_request)
       if resp.respond_to?(:item)
-        resp.item
+        typed_attributes = {}
+        resp.item.each {|k,v| typed_attributes[k] = TinyDyno::Adapter.doc_attribute(v) }
+        typed_attributes
       else
         nil
       end

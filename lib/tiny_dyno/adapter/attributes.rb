@@ -42,7 +42,18 @@ module TinyDyno
               end
             when 'String' then { s: obj }
             when 'Symbol' then { s: obj.to_s }
-            when 'Numeric', 'Fixnum', 'Float' then { n: obj.to_s }
+            when 'Numeric', 'Fixnum', 'Float', 'Integer'
+              if obj.to_i != 0 and obj != '0'
+                { n: obj.to_s }
+              elsif obj.to_i === 0 and obj == '0'
+                { n: obj.to_s }
+              elsif obj.is_a?(Integer)
+                { n: obj.to_s }
+              elsif obj.nil?
+                { n: nil }
+              else
+                raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: type, value: obj)
+              end
             when 'StringIO', 'IO' then { b: obj }
             when 'Set' then format_set(obj)
             when 'TrueClass', 'FalseClass' then { bool: obj }
@@ -121,6 +132,22 @@ module TinyDyno
       av = TinyDyno::Adapter::AttributeValue.new
       av.unmarshal(value)
     end
+
+    def simple_attribute(field_type:, value:)
+      raw_attribute = aws_attribute(field_type: field_type, value: value)
+
+      case field_type.to_s
+        when 'Fixnum', 'Integer'
+          simple_value = doc_attribute(raw_attribute).to_i
+        when 'Float'
+          simple_value = doc_attribute(raw_attribute).to_f
+        when 'Numeric', 'String', 'Array', 'Hash' then
+          simple_value = doc_attribute(raw_attribute)
+      else
+        raise ArgumentError, "unhandled type #{ field_type.inspect }"
+      end
+      simple_value
+    end #simple_attribute
 
   end
 end

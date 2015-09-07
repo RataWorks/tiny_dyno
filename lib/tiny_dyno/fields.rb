@@ -1,5 +1,6 @@
 require 'tiny_dyno/fields/standard'
 require 'tiny_dyno/fields/range_key'
+require 'tracer'
 
 module TinyDyno
   module Fields
@@ -245,9 +246,8 @@ module TinyDyno
       def create_field_setter(name, meth, field)
         generated_methods.module_eval do
           re_define_method("#{meth}=") do |value|
-            value = typed_value_for(name,value)
-            val = write_attribute(name, value)
-            val
+            typed_value = TinyDyno::Adapter.simple_attribute(field_type: field.options[:type], value: value)
+            write_attribute(name, typed_value)
           end
         end
       end

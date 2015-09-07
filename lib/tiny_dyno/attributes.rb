@@ -116,10 +116,8 @@ module TinyDyno
     #
     # @since 1.0.0
     def typed_value_for(key, value)
-      # raise MissingAttributeError if fields[key].nil? and hash_keys.find_index { |a| a[:attr] == key }.nil?
       raise MissingAttributeError if fields[key].nil?
-      field_type = self.fields[key].options[:type]
-      return (TinyDyno::Adapter.aws_attribute(field_type: field_type, value: value))
+      TinyDyno::Adapter.simple_attribute(field_type: self.fields[key].options[:type], value: value)
     end
 
     # Determine if the attribute is missing from the document, due to loading

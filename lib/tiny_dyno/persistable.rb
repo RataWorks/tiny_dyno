@@ -50,7 +50,7 @@ module TinyDyno
 
     def build_item_request_entries
       item_entries = {}
-      attributes.each { |k,v| item_entries[k] = v }
+      attributes.each { |k,v| item_entries[k] = TinyDyno::Adapter.aws_attribute(field_type: fields[k].options[:type], value: v) }
       item_entries
     end
 

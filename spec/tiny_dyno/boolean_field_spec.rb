@@ -12,13 +12,12 @@ describe 'Boolean Field Test' do
   let(:my_account) { Fabricate.build(:account) }
 
   it 'should save a document with a boolean type' do
-    # binding.pry
     expect([true,false].include?(my_account.active)).to be true
     expect(my_account.save).to be true
   end
 
   it 'should reject non boolean values on a boolean field' do
-    expect { my_account.active = 'foobar' }.to raise_error TinyDyno::Errors::InvalidValueType
+    expect { my_account.active = 'foobar' }.to raise_error ArgumentError
   end
 
 end

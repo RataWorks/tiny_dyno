@@ -3,6 +3,6 @@ class TestList
 
   hash_key :id, type: String
 
-  field :names, type: Hash
+  field :names, type: Array
 
 end

@@ -14,6 +14,4 @@ describe TinyDyno::HashKey do
     }.to raise_error(TinyDyno::Errors::OnlyOneHashKeyPermitted)
   end
 
-  it 'requires one hash key to be defined'
-
 end

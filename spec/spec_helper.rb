@@ -12,7 +12,7 @@ require 'simplecov'
 SimpleCov.coverage_dir 'coverage/rspec'
 
 require 'aws-sdk'
-Aws.config[:endpoint] = ENV['DYNAMODB_URL']
+Aws.config[:endpoint] = ENV['DYNAMODB_URL'] if ENV['DYNAMODB_URL']
 
 require 'tiny_dyno'
 

@@ -32,6 +32,12 @@ describe TinyDyno::Fields::RangeKey do
       expect { Account.where(id: '1', label: 'foo') }.to raise_error (TinyDyno::Errors::InvalidSelector)
     end
 
+    it 'adds the range key to a delete request, when the document has a range defined' do
+      account = Fabricate(:account)
+      expect(account.save).to be true
+      expect(account.delete).to be true
+    end
+
   end
 
 end

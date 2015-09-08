@@ -1,6 +1,5 @@
 require 'tiny_dyno/fields/standard'
 require 'tiny_dyno/fields/range_key'
-require 'tracer'
 
 module TinyDyno
   module Fields
@@ -163,8 +162,11 @@ module TinyDyno
         opts = options.merge(klass: self)
         if opts.has_key?(:range_key) && opts[:range_key] == true
           named = name.to_s
-          attribute_definitions << build_attribute_definition(named,options[:type])
-          key_schema << { attribute_name: named, key_type: 'RANGE' }
+          ad = build_attribute_definition(named,opts[:type])
+          attribute_definitions << ad
+          ks = { attribute_name: named, key_type: 'RANGE' }
+          key_schema << ks
+          self.range_key = ks.merge(ad)
           Fields::RangeKey.new(name, opts)
         else
           Fields::Standard.new(name, opts)

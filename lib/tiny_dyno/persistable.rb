@@ -40,14 +40,6 @@ module TinyDyno
       }
     end
 
-    # def build_update_item_request
-    #   {
-    #       key: hash_key_as_selector,
-    #       table_name: self.class.table_name,
-    #       attribute_updates: build_attribute_updates
-    #   }
-    # end
-
     def build_item_request_entries
       item_entries = {}
       attributes.each { |k,v| item_entries[k] = TinyDyno::Adapter.aws_attribute(field_type: fields[k].options[:type], value: v) }

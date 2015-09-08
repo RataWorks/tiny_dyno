@@ -46,7 +46,7 @@ module TinyDyno
     def request_delete
       request = {
           table_name: self.class.table_name,
-          key: hash_key_as_selector
+          key: keys_as_selector
       }
       TinyDyno::Adapter.delete_item(request: request)
     end

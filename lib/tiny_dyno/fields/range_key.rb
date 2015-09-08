@@ -20,7 +20,7 @@ module TinyDyno
       # @since 3.0.0
       def initialize(name, options = {})
         @name = name
-        @options = options
+        @options = options.merge(range_key: true)
         @label = options[:label]
         @default_val = options[:default]
         @type = options[:type]

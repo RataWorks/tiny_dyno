@@ -3,20 +3,28 @@ module TinyDyno
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :attribute_definitions, :key_schema, :primary_key
+      class_attribute :attribute_definitions, :key_schema, :primary_key, :range_key
 
       # TODO :local_secondary_indexes, :global_secondary_indexes
       self.attribute_definitions ||= []
       self.key_schema ||= []
       self.primary_key ||= {}
+      self.range_key ||= {}
     end
 
     # return all defined hash keys on an instantiated object
     # for further use in DynamoDB queries, i.e. to look up an object
     #
-    def hash_key_as_selector
-      key_field = self.class.primary_key[:attr]
-      { "#{ self.class.primary_key[:attr] }": TinyDyno::Adapter.aws_attribute(field_type: fields[key_field].options[:type], value: attributes[key_field]) }
+    def keys_as_selector
+      selector = {}
+      primary_key_field = self.class.primary_key[:attr]
+      selector[primary_key_field.to_sym] = TinyDyno::Adapter.aws_attribute(field_type: fields[primary_key_field].options[:type], value: attributes[primary_key_field])
+      unless range_key.empty?
+        range_key_field = self.class.range_key[:attribute_name]
+        selector[range_key_field.to_sym] = TinyDyno::Adapter.aws_attribute(field_type: fields[range_key_field].options[:type], value: attributes[range_key_field])
+      end
+      return nil if selector.empty?
+      selector
     end
 
     module ClassMethods

@@ -1,3 +1,8 @@
+0.1.19 (2015-09-09)
+-------------------
+
+* New/Fix - support deletion of documents with range key
+
 0.1.18 (2015-09-09)
 -------------------
 

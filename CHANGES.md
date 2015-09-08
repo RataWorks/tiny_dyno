@@ -1,3 +1,8 @@
+0.1.17 (2015-09-08)
+-------------------
+
+* Use simple_attributes: false by default and enforce/ coerce attributes to be of specified Class as per model
+
 0.1.16 (2015-09-04)
 
 * New - Add boolean field type support and introduce type checking on setting field values to assert correct type coercion, when setting values

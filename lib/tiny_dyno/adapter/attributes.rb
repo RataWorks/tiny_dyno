@@ -40,7 +40,12 @@ module TinyDyno
               obj.each.with_object(l:[]) do |value, list|
                 list[:l] << format(type: value.class, obj: value)
               end
-            when 'String' then { s: obj }
+            when 'String'
+              if obj.nil?
+                { null: true }
+              else
+                { s: obj }
+              end
             when 'Symbol' then { s: obj.to_s }
             when 'Numeric', 'Fixnum', 'Float', 'Integer'
               if obj.to_i != 0 and obj != '0'
@@ -56,7 +61,10 @@ module TinyDyno
               end
             when 'StringIO', 'IO' then { b: obj }
             when 'Set' then format_set(obj)
-            when 'TrueClass', 'FalseClass' then { bool: obj }
+            when 'TrueClass', 'FalseClass', 'TinyDyno::Boolean'
+              # ToDo, how can we initialize a boolean field into a valid state?
+              raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: type, value: obj) unless [true,false,nil].include?(obj)
+              { bool: obj }
             when 'NilClass' then { null: true }
             else
               msg = "unsupported type, expected Hash, Array, Set, String, Numeric, "
@@ -141,7 +149,7 @@ module TinyDyno
           simple_value = doc_attribute(raw_attribute).to_i
         when 'Float'
           simple_value = doc_attribute(raw_attribute).to_f
-        when 'Numeric', 'String', 'Array', 'Hash' then
+        when 'Numeric', 'String', 'Array', 'Hash', 'TinyDyno::Boolean' then
           simple_value = doc_attribute(raw_attribute)
       else
         raise ArgumentError, "unhandled type #{ field_type.inspect }"

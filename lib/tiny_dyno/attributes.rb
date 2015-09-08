@@ -1,8 +1,6 @@
 require 'active_model/attribute_methods'
 require 'tiny_dyno/attributes/readonly'
 
-require 'pry'
-
 module TinyDyno
   module Attributes
 

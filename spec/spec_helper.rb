@@ -5,6 +5,8 @@ ENV['AWS_ACCESS_KEY_ID'] ||= 'foo'
 ENV['AWS_SECRET_ACCESS_KEY'] ||= 'bar'
 ENV['DYNAMODB_URL'] ||= 'http://127.0.0.1:8000'
 
+require 'pry'
+
 require 'fabrication'
 require 'faker'
 

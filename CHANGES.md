@@ -1,3 +1,8 @@
+0.1.20 (2015-09-09)
+-------------------
+
+* Fix - do not coerce a BigDecimal from nil, when typecasting Numeric values
+
 0.1.19 (2015-09-09)
 -------------------
 

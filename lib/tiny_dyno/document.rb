@@ -68,7 +68,6 @@ module TinyDyno
         end
       end
 
-
       private
 
       # minimimum implementation for now

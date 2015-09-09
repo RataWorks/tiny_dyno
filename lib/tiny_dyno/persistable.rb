@@ -3,6 +3,7 @@ module TinyDyno
     extend ActiveSupport::Concern
 
     def save(options = {})
+      return false unless self.valid?
       if new_record?
         if request_put_item(options)
           changes_applied

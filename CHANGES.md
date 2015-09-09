@@ -1,3 +1,10 @@
+0.1.23 (2015-09-09)
+-------------------
+
+* New - add support to toggle validation of records on save
+* increase robustness of number type handling
+
+
 0.1.22 (2015-09-09)
 -------------------
 

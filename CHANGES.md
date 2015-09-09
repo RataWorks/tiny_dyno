@@ -1,3 +1,8 @@
+0.1.21 (2015-09-09)
+-------------------
+
+* Fix logic to check for resp.item.nil? on mismatching get_item requests
+
 0.1.20 (2015-09-09)
 -------------------
 

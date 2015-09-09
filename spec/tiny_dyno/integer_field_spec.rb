@@ -19,12 +19,6 @@ describe 'Integer Field Test' do
       expect(Person.where(id: person.id).age).to be 27
     end
 
-    it 'should coerce a string number assignment to an integer field and return an Integer' do
-      person.age = '55'
-      expect(person.save).to be true
-      expect(Person.where(id: person.id).age).to be 55
-    end
-
   end
 
   describe 'Attribute Type Coercion' do
@@ -34,15 +28,19 @@ describe 'Integer Field Test' do
       expect(person.age).to be 27
     end
 
-    it 'should coerce a string number assignment to an integer field and return an Integer' do
-      expect(person.age = '55').to eq '55'
-      expect(person.age).to be 55
+    it 'does coerce string typed numbers' do
+      expect(person.age = '234').to eq '234'
+      expect(person.age).to be 234
     end
 
-  end
+    it 'should reject string numbers, not easily convertable' do
+      expect { person.age = '00' }.to raise_error TinyDyno::Errors::NotTransparentlyCoercible
+    end
 
-  it 'should reject non coercable values on an integer field' do
-    expect { person.age = 'foobar' }.to raise_error TinyDyno::Errors::InvalidValueType
+    it 'should reject non coercable values on an integer field' do
+      expect { person.age = 'foobar' }.to raise_error TinyDyno::Errors::NotTransparentlyCoercible
+    end
+
   end
 
 end

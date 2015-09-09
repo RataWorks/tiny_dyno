@@ -43,18 +43,7 @@ module TinyDyno
               end
             when 'String' then { s: obj }
             when 'Symbol' then { s: obj.to_s }
-            when 'Numeric', 'Fixnum', 'Float', 'Integer'
-              if obj.to_i != 0 and obj != '0'
-                { n: obj.to_s }
-              elsif obj.to_i === 0 and obj == '0'
-                { n: obj.to_s }
-              elsif obj.is_a?(Integer)
-                { n: obj.to_s }
-              elsif obj.nil?
-                { null: true }
-              else
-                raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: type, value: obj)
-              end
+            when 'Numeric', 'Fixnum', 'Float', 'Integer', 'BigDecimal' then numeric_format(type.to_s,obj)
             when 'StringIO', 'IO' then { b: obj }
             when 'Set' then format_set(obj)
             when 'TrueClass', 'FalseClass', 'TinyDyno::Boolean'
@@ -62,14 +51,41 @@ module TinyDyno
               raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: type, value: obj) unless [true,false,nil].include?(obj)
               { bool: obj }
             when 'NilClass' then { null: true }
-            else
-              msg = "unsupported type, expected Hash, Array, Set, String, Numeric, "
-              msg << "IO, true, false, or nil, got #{obj.class.name}"
-              raise ArgumentError, msg
+          else
+            msg = "unsupported type, expected Hash, Array, Set, String, Numeric, "
+            msg << "IO, true, false, or nil, got #{obj.class.name}"
+            raise ArgumentError, msg
           end
-        end
+        end #format
 
         private
+
+        def numeric_format(type,obj)
+          case type
+            when 'Fixnum', 'Integer', 'Numeric'
+              if obj.class == BigDecimal
+                raise TinyDyno::Errors::NotTransparentlyCoercible.new(klass: self.class, name: type, value: obj) unless obj == BigDecimal.new(obj.to_s)
+                { n: obj.to_s }
+              elsif obj.class == String
+                raise TinyDyno::Errors::NotTransparentlyCoercible.new(klass: self.class, name: type, value: obj) unless obj.to_i.to_s == obj
+                { n: obj }
+              else
+                raise TinyDyno::Errors::NotTransparentlyCoercible.new(klass: self.class, name: type, value: obj) unless obj.to_i == obj.to_s.to_i
+                { n: obj.to_s }
+              end
+            when 'Float'
+              raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: type, value: obj) unless obj.is_a?(Float)
+              raise TinyDyno::Errors::NotTransparentlyCoercible.new(klass: self.class, name: type, value: obj) unless obj == obj.to_s.to_f
+              { n: obj.to_s }
+            when 'BigDecimal'
+              raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: type, value: obj) unless obj.is_a?(BigDecimal)
+              raise TinyDyno::Errors::NotTransparentlyCoercible.new(klass: self.class, name: type, value: obj) unless obj == BigDecimal.new(obj.to_s)
+              { n: obj.to_s}
+          else
+            msg = "unsupported type, expected Fixnum, Integer, Float, BigDecimal "
+            raise ArgumentError, msg
+          end
+        end #numeric_format
 
         def format_set(set)
           case set.first
@@ -80,9 +96,9 @@ module TinyDyno
               msg = "set types only support String, Numeric, or IO objects"
               raise ArgumentError, msg
           end
-        end
+        end #format_set
 
-      end
+      end #AttributeValue
 
       class Unmarshaler
 
@@ -147,12 +163,9 @@ module TinyDyno
       raw_attribute = aws_attribute(field_type: field_type, value: value)
 
       case field_type.to_s
-        when 'Fixnum', 'Integer'
-          simple_value = doc_attribute(raw_attribute).to_i
-        when 'Float'
-          simple_value = doc_attribute(raw_attribute).to_f
-        when 'Numeric', 'String', 'Array', 'Hash', 'TinyDyno::Boolean' then
-          simple_value = doc_attribute(raw_attribute)
+        when 'Fixnum', 'Integer' then simple_value = doc_attribute(raw_attribute).to_i
+        when 'Float' then simple_value = doc_attribute(raw_attribute).to_f
+        when 'Numeric', 'String', 'Array', 'Hash', 'TinyDyno::Boolean' then simple_value = doc_attribute(raw_attribute)
       else
         raise ArgumentError, "unhandled type #{ field_type.inspect }"
       end

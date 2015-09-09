@@ -4,6 +4,14 @@ en:
       messages:
         blank_in_locale:
           "can't be blank in %{location}"
+        can_not_coerce_transparently:
+          message: "Storing and retrieving value: %{value} as type: %{name} would
+            result in loss of information."
+          summary: "DynamoDB stores AttributeValues as a key value representation.
+            Your combination of intented field type and the actual value representation
+            can not be stored and retrieved from DynamoDB without loosing information."
+          resolution: "Either choose a different field type, or coerce the value manually
+            into the target type, when assigning it to the field.'
         callbacks:
           message: "Calling %{method} on %{klass} resulted in a false return
             from a callback."

@@ -99,7 +99,12 @@ module TinyDyno
               end
             when :l then value.map { |v| format(v) }
             when :s then value
-            when :n then BigDecimal.new(value)
+            when :n
+              if value.nil?
+                nil
+              else
+                BigDecimal.new(value)
+              end
             when :b then StringIO.new(value)
             when :null then nil
             when :bool then value

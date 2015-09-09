@@ -3,7 +3,9 @@ module TinyDyno
     extend ActiveSupport::Concern
 
     def save(options = {})
-      return false unless self.valid?
+      unless options.has_key?(:validate) && options[:validate] == false
+        return false unless self.valid?
+      end
       if new_record?
         if request_put_item(options)
           changes_applied

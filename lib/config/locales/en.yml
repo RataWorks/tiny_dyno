@@ -11,7 +11,7 @@ en:
             Your combination of intented field type and the actual value representation
             can not be stored and retrieved from DynamoDB without loosing information."
           resolution: "Either choose a different field type, or coerce the value manually
-            into the target type, when assigning it to the field.'
+            into the target type, when assigning it to the field."
         callbacks:
           message: "Calling %{method} on %{klass} resulted in a false return
             from a callback."

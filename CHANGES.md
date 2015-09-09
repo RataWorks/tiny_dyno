@@ -1,3 +1,9 @@
+0.1.22 (2015-09-09)
+-------------------
+
+* Fix/New - Check document validity before storing the document
+* Change - permit storing nil values on boolean fields, fields need to be able to be nil on creation (in the current implementation), thus permit nil as value even on a boolean field
+
 0.1.21 (2015-09-09)
 -------------------
 

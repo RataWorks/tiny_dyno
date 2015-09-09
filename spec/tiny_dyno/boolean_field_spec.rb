@@ -22,10 +22,10 @@ describe 'Boolean Field Test' do
     expect { my_account.active = 1 }.to raise_error TinyDyno::Errors::InvalidValueType
   end
 
-  it 'permits nil, to allow field initialization, but raise errror' do
+  it 'permits nil, to allow field initialization ' do
     expect(my_account.active = nil).to be nil
     expect(my_account.active.nil?).to be true
-    expect { my_account.save }.to raise_error Aws::DynamoDB::Errors::ValidationException
+    expect(my_account.save).to be true
   end
 
 end

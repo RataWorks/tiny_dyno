@@ -30,6 +30,7 @@ module TinyDyno
       class Marshaler
 
         def format(type: 'auto', obj:)
+          return { null: true } if obj.nil?
           type = obj.class.to_s if type == 'auto'
           case type.to_s
             when 'Hash'
@@ -40,12 +41,7 @@ module TinyDyno
               obj.each.with_object(l:[]) do |value, list|
                 list[:l] << format(type: value.class, obj: value)
               end
-            when 'String'
-              if obj.nil?
-                { null: true }
-              else
-                { s: obj }
-              end
+            when 'String' then { s: obj }
             when 'Symbol' then { s: obj.to_s }
             when 'Numeric', 'Fixnum', 'Float', 'Integer'
               if obj.to_i != 0 and obj != '0'
@@ -55,7 +51,7 @@ module TinyDyno
               elsif obj.is_a?(Integer)
                 { n: obj.to_s }
               elsif obj.nil?
-                { n: nil }
+                { null: true }
               else
                 raise TinyDyno::Errors::InvalidValueType.new(klass: self.class, name: type, value: obj)
               end
@@ -142,6 +138,7 @@ module TinyDyno
     end
 
     def doc_attribute(value)
+      return nil if value.nil?
       av = TinyDyno::Adapter::AttributeValue.new
       av.unmarshal(value)
     end

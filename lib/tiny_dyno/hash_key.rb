@@ -17,7 +17,7 @@ module TinyDyno
     #
     def keys_as_selector
       selector = {}
-      primary_key_field = self.class.primary_key[:attr]
+      primary_key_field = self.class.primary_key[:attribute_name]
       selector[primary_key_field.to_sym] = TinyDyno::Adapter.aws_attribute(field_type: fields[primary_key_field].options[:type], value: attributes[primary_key_field])
       unless range_key.empty?
         range_key_field = self.class.range_key[:attribute_name]
@@ -55,7 +55,7 @@ module TinyDyno
         self.attribute_definitions << attribute_definition
         self.key_schema << key_schema
         self.primary_key = {
-            attr: attribute_definition[:attribute_name],
+            attribute_name: attribute_definition[:attribute_name],
             attr_type: attribute_definition[:attribute_type],
             key_type: key_schema[:key_type],
         }

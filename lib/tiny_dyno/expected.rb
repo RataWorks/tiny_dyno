@@ -8,7 +8,7 @@ module TinyDyno
     def request_as_new_record(request)
       request.merge({
                         expected: {
-                            "#{ primary_key[:attr] }": {
+                            "#{ primary_key[:attribute_name] }": {
                                 comparison_operator: 'NULL'
                             }
                         }})

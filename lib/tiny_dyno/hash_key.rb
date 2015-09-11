@@ -56,7 +56,7 @@ module TinyDyno
         self.key_schema << key_schema
         self.primary_key = {
             attribute_name: attribute_definition[:attribute_name],
-            attr_type: attribute_definition[:attribute_type],
+            attribute_type: attribute_definition[:attribute_type],
             key_type: key_schema[:key_type],
         }
       end

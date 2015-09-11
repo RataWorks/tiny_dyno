@@ -1,6 +1,11 @@
 0.1.24 (2015-09-11)
 -------------------
 
+* Add missing syntax update for primary_key hash
+
+0.1.24 (2015-09-11)
+-------------------
+
 * Add missing translations
 
 0.1.23 (2015-09-09)

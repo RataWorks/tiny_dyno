@@ -1,4 +1,9 @@
-0.1.24 (2015-09-11)
+0.1.26 (2015-09-11)
+-------------------
+
+* FIX: Discard empty string attributes before saving the document, since DynamoDB does not store these by design
+
+0.1.25 (2015-09-11)
 -------------------
 
 * Add missing syntax update for primary_key hash

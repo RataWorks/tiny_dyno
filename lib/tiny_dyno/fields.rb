@@ -191,7 +191,6 @@ module TinyDyno
         field = fields[name]
 
         create_field_getter(name, meth, field)
-        create_field_getter_before_type_cast(name, meth)
         create_field_setter(name, meth, field)
         create_field_check(name, meth)
 

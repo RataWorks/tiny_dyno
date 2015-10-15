@@ -33,6 +33,39 @@ module TinyDyno
     end
     alias :[] :read_attribute
 
+    # Read a value from the attributes before type cast. If the value has not
+    # yet been assigned then this will return the attribute's existing value
+    # using read_attribute.
+    #
+    # @example Read an attribute before type cast.
+    #   person.read_attribute_before_type_cast(:price)
+    #
+    # @param [ String, Symbol ] name The name of the attribute to get.
+    #
+    # @return [ Object ] The value of the attribute before type cast, if
+    #   available. Otherwise, the value of the attribute.
+    #
+    # @since 3.1.0
+    def read_attribute_before_type_cast(name)
+      attr = name.to_s
+      if attributes_before_type_cast.key?(attr)
+        attributes_before_type_cast[attr]
+      else
+        read_attribute(attr)
+      end
+    end
+
+    # Get the attributes that have not been cast.
+    #
+    # @example Get the attributes before type cast.
+    #   document.attributes_before_type_cast
+    #
+    # @return [ Hash ] The uncast attributes.
+    #
+    # @since 3.1.0
+    def attributes_before_type_cast
+      @attributes_before_type_cast ||= {}
+    end
 
     # Write a single attribute to the document attribute hash. This will
     # also fire the before and after update callbacks, and perform any

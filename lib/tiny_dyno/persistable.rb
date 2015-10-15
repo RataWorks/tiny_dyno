@@ -6,6 +6,7 @@ module TinyDyno
       unless options.has_key?(:validate) && options[:validate] == false
         return false unless self.valid?
       end
+      remove_empty_attributes
       if new_record?
         if request_put_item(options)
           changes_applied
@@ -25,6 +26,15 @@ module TinyDyno
     end
 
     private
+
+    def remove_empty_attributes
+      self.class.fields
+      @attributes.each_pair do |k,v|
+        next unless self.class.fields[k].options[:type].to_s == 'String'
+        next unless v.respond_to?(:to_s)
+        @attributes.delete(k) if v.to_s.nil? or v.to_s.empty?
+      end
+    end
 
     def request_put_item(options)
       request = request_as_new_record(build_put_item_request)

@@ -1,3 +1,8 @@
+0.1.27 (2015-11-03)
+-------------------
+
+* Fix: Allow attributes to have value = 'test' by monkey patching activemodel
+
 0.1.26 (2015-09-11)
 -------------------
 

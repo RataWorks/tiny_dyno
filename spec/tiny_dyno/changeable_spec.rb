@@ -15,8 +15,4 @@ describe TinyDyno::Changeable do
     end
   end
 
-
-
-  end
-
 end

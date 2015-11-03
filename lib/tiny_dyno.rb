@@ -1,5 +1,7 @@
 require 'active_model'
 require 'active_support/core_ext/hash/indifferent_access'
+
+require 'patch/active_model_support_test_value_patch'
 require 'aws-sdk'
 
 require 'tiny_dyno/extensions'
